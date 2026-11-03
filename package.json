@@ -1,0 +1,17 @@
+{
+  "name": "huellitas-felices",
+  "version": "1.0.0",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mysql2": "^3.11.0"
+  },
+  "description": "Sistema web de adopción de mascotas Huellitas Felices (Node.js, Express y MySQL)"
+}

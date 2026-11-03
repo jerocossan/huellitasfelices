@@ -1,0 +1,202 @@
+:root {
+            --primary: #FF6B35;
+            --secondary: #4CAF82;
+            --accent: #FFD166;
+            --dark: #2D3748;
+            --light-bg: #FFF8F3;
+            --card-radius: 20px;
+        }
+
+        * { font-family: 'Nunito', sans-serif; }
+
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar-brand {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            color: var(--primary) !important;
+            letter-spacing: 1px;
+            /* background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.4); */
+
+        }
+
+        .navbar-brand i { color: var(--accent); }
+        .navbar { background-color: #fff !important; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+        .nav-link { font-weight: 700; color: var(--dark) !important; }
+        .nav-link:hover { color: var(--primary) !important; }
+        .nav-link.active { color: var(--primary) !important; }
+
+        .btn-adoptar {
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            padding: .45rem 1.2rem;
+        }
+        .btn-adoptar:hover { background: #e05520; color:#fff; }
+
+        /* ── HERO / CAROUSEL ── */
+        .carousel-item img { height: 420px; object-fit: cover; }
+
+        .hero-caption {
+            background: rgba(0,0,0,.55);
+            border-radius: 16px;
+            padding: 20px 28px;
+            max-width: 520px;
+        }
+
+        /* ── STATS ── */
+        .stats-bar {
+            background: var(--primary);
+            color: #fff;
+            padding: 18px 0;
+            border-radius: 20px;
+        }
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            line-height: 1;
+            color: var(--accent);
+        }
+        .stat-label { font-size: .82rem; font-weight: 700; opacity: .9; }
+
+        /* ── CONTEXTO ── */
+        .context-section { padding: 60px 0; }
+        .context-icon {
+            width: 60px; height: 60px;
+            background: var(--accent);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            color: var(--dark);
+        }
+
+        /* ── CARDS MASCOTAS ── */
+        .pet-card {
+            border: none;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            transition: transform .25s, box-shadow .25s;
+            box-shadow: 0 4px 16px rgba(0,0,0,.08);
+        }
+        .pet-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,.14); }
+        .pet-card .card-img-top {
+            height: 220px;
+            object-fit: cover;
+        }
+        .pet-card .card-body { padding: 18px; }
+
+        .badge-especie {
+            background: var(--accent);
+            color: var(--dark);
+            font-weight: 700;
+            border-radius: 50px;
+            font-size: .75rem;
+            padding: 4px 12px;
+        }
+        .badge-urgente { background: #FF4757 !important; color: #fff !important; }
+
+        .btn-adoptar-card {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            width: 100%;
+            padding: .5rem;
+        }
+        .btn-adoptar-card:hover { background: #e05520; color:#fff; }
+        .btn-detail-card {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            font-weight: 700;
+            width: 100%;
+            padding: .45rem;
+        }
+        .btn-detail-card:hover { background: var(--primary); color:#fff; }
+
+        /* ── PASOS ── */
+        .steps-section { background: #fff; padding: 60px 0; }
+        .step-circle {
+            width: 56px; height: 56px; background: var(--primary); color: #fff;
+            font-family: 'Fredoka One', cursive; font-size: 1.4rem; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;
+        }
+        .step-card { text-align: center; padding: 24px 16px; }
+
+        /* ── TESTIMONIOS ── */
+        .testimonial-card { background: #fff; border-radius: var(--card-radius); padding: 28px; box-shadow: 0 4px 16px rgba(0,0,0,.07); border: none; }
+        .avatar-img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); }
+
+        /* ── FOOTER ── */
+        .footer-main { background-color: var(--dark); color: #adb5bd; }
+        .footer-brand { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: #fff; }
+        .footer-link { color: #adb5bd; text-decoration: none; }
+        .footer-link:hover { color: var(--accent); }
+        .footer-bottom { background-color: #1a202c; color: #6c757d; font-size: .85rem; padding: 14px 0; }
+
+        /* ── MISC ── */
+        .section-title { font-family: 'Fredoka One', cursive; color: var(--dark); font-size: 2rem; }
+        .section-subtitle { color: #6c757d; font-size: 1rem; }
+        .paw-divider { color: var(--primary); font-size: 1.3rem; letter-spacing: 6px; }
+        .social-icon {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: transform .2s, filter .2s, color .2s; font-size: 1rem; border: none;
+        }
+        .social-icon:hover { transform: translateY(-1px); filter: brightness(.95); color: #fff; }
+
+        .btn-facebook {
+            background: #1877F2;
+            color: #fff;
+        }
+        .btn-instagram {
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            color: #fff;
+        }
+        .btn-tiktok {
+            background: #010101;
+            color: #69C9D0;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            color: #fff;
+        }
+
+        .barra {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.4);
+        }
+
+        .caja {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.4);
+            padding: 30px;
+        }
+
+        main.page-content {
+            flex: 1 0 auto;
+        }
+        
+        .footer-main,
+        .footer-bottom {
+            flex-shrink: 0;
+            margin-top: 0;
+        }
