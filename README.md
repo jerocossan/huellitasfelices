@@ -74,6 +74,17 @@ El proyecto combina un frontend web responsive (HTML, CSS y JavaScript con Boots
 
    El script crea la base de datos `huellitas_felices`.
 
+   Si ya tienes una base creada, primero haz una copia de seguridad y aplica
+   la migración de roles sobre la base existente:
+
+   ```
+   mysql -u root -p huellitas_felices < database/migrar_roles.sql
+   ```
+
+   La migración conserva los datos y columnas existentes, crea los cuatro
+   roles e incorpora la relación `usuarios.id_rol` → `roles.id_rol`. Las
+   cuentas sin un rol previo quedan como `usuario`.
+
 4. Crea un archivo `.env` en la raíz a partir de `.env.example`:
 
    ```
@@ -116,7 +127,8 @@ Esta cuenta es únicamente para desarrollo y demostración. Debe cambiarse o eli
 ```
 .
 ├── database/
-│   └── bd.sql                    # Esquema, relaciones y datos de prueba
+│   ├── bd.sql                    # Esquema, relaciones y datos de prueba
+│   └── migrar_roles.sql          # Migra una base de datos existente
 ├── public/
 │   ├── assets/
 │   │   ├── css/estilo.css        # Estilos de la interfaz
@@ -140,7 +152,8 @@ Esta cuenta es únicamente para desarrollo y demostración. Debe cambiarse o eli
 
 La base de datos `huellitas_felices` incluye estas tablas:
 
-- `usuarios`: cuentas y roles (`usuario` o `administrador`).
+- `usuarios`: cuentas con `id_rol` como clave foránea.
+- `roles`: `usuario` (1), `admin` (2), `fundacion` (3) y `especialistas` (4).
 - `mascotas`: datos de cada animal (especie, raza, edad, sexo, tamaño, color, estado e imagen).
 - `categorias` y `mascota_categoria`: clasificación de las mascotas.
 - `imagenes_mascotas`: galería de imágenes por mascota.
@@ -156,8 +169,36 @@ La base de datos `huellitas_felices` incluye estas tablas:
 | `POST` | `/api/login`    | Inicia sesión por correo y contraseña          | Público       |
 | `POST` | `/api/registro` | Registra un nuevo usuario                      | Público       |
 | `GET`  | `/api/logout`   | Cierra la sesión                               | Público       |
+| `GET`   | `/api/admin/usuarios` | Lista las cuentas y sus roles             | Admin         |
+| `PATCH` | `/api/admin/usuarios/:id/rol` | Asigna un rol existente          | Admin         |
 | `GET`  | `/api/mascotas` | Lista las mascotas                             | Con sesión    |
 | `GET`  | `/report_pet`   | Descarga el reporte de una mascota (`pet_id`)  | Con sesión    |
+
+El registro público siempre asigna el rol `usuario`; el formulario no acepta
+roles. Para dar de alta al primer administrador en una base migrada, ejecuta
+una vez en MySQL (cambia el correo por el de la cuenta que administrarás):
+
+```sql
+UPDATE usuarios u
+JOIN roles r ON r.nombre_rol = 'admin'
+SET u.id_rol = r.id_rol
+WHERE u.email = 'correo-del-admin@example.com';
+```
+
+Si tu columna de correo se llama `correo` en vez de `email`, reemplaza `u.email`
+por `u.correo`. Después, un administrador autenticado puede listar usuarios y
+asignar `usuario`, `admin`, `fundacion` o `especialistas` mediante los
+endpoints administrativos. Para asignar un rol, envía JSON
+`{"nombre_rol":"fundacion"}` a `/api/admin/usuarios/:id/rol`. No se permite
+cambiar el propio rol. El panel
+`/administrador` y sus recursos se autorizan consultando el rol vigente en la
+base de datos; los otros tres roles usan el portal de usuario compartido.
+Después de iniciar sesión, el backend responde con una redirección HTTP:
+`usuario` → `/usuario`, `admin` → `/administrador`, `fundacion` →
+`/fundacion` y `especialistas` → `/especialistas`. Las rutas de fundación y
+especialistas usan por ahora la vista de usuario existente, pero están
+protegidas por su rol. La sesión conserva `id_usuario`, `user_name`, `correo`,
+`id_rol` y `rol`/`nombre_rol`.
 
 ## Estado del proyecto
 

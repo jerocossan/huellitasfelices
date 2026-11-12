@@ -196,6 +196,26 @@ INSERT INTO `solicitudes_adopcion` (`id_solicitud`, `id_usuario`, `id_mascota`, 
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `roles`
+--
+
+CREATE TABLE `roles` (
+  `id_rol` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_rol` varchar(50) NOT NULL,
+  `descripcion` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_rol`),
+  UNIQUE KEY `nombre_rol` (`nombre_rol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `roles` (`id_rol`, `nombre_rol`, `descripcion`) VALUES
+(1, 'usuario', 'Usuario registrado de la plataforma.'),
+(2, 'admin', 'Administra la plataforma y asigna roles.'),
+(3, 'fundacion', 'Gestiona la informacion de una fundacion.'),
+(4, 'especialistas', 'Profesional especializado en bienestar animal.');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -207,7 +227,7 @@ CREATE TABLE `usuarios` (
   `telefono` varchar(20) DEFAULT NULL,
   `direccion` varchar(200) DEFAULT NULL,
   `contrasena` varchar(255) NOT NULL,
-  `rol` enum('usuario','administrador') DEFAULT 'usuario',
+  `id_rol` int(11) NOT NULL DEFAULT 1,
   `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -215,13 +235,14 @@ CREATE TABLE `usuarios` (
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `contrasena`, `rol`, `fecha_registro`) VALUES
-(1, 'Administrador', 'Principal', 'admin@huellitasfelices.com', '3001234567', 'Bogotá', '123456', 'administrador', '2026-07-29 14:24:24'),
-(2, 'Juan', 'Pérez', 'juan@gmail.com', '3101234567', 'Medellín', '123456', 'usuario', '2026-07-29 14:24:24'),
-(3, 'María', 'Gómez', 'maria@gmail.com', '3201234567', 'Cali', '123456', 'usuario', '2026-07-29 14:24:24'),
-(4, 'jeronimo cossio', '', 'jeronimo.cossio.sanchez@gmail.com', '123234', NULL, '$2y$10$szjzBJH13fwfUuhLlN/Bju9SlK99aXA3vzwaaPc607ko0.Zd6W4j2', 'usuario', '2026-07-29 14:40:01'),
-(9, 'jeronimo', 'cossio sance', 'jejene@gmail.com', '123234', 'medellin', '$2y$10$0P1uBlyJhq5bhCcO7GKthO96ZC/kOmoekGZDPp5kWMYXAKqgcS4g2', 'usuario', '2026-07-29 15:03:15'),
-(10, 'jeronimo cossio', 'cossio sance', 'dewxx@gmail.com', '123234', 'medellin', '$2y$10$Kyw14/WR4u.oT2BjQZ/ujegLqWL1YFxTdJ3VpQFgr/ErmHJpL0eCi', 'usuario', '2026-07-29 15:16:59');
+INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `contrasena`, `id_rol`, `fecha_registro`) VALUES
+(1, 'Administrador', 'Principal', 'admin@huellitasfelices.com', '3001234567', 'Bogotá', '123456', 2, '2026-07-29 14:24:24'),
+(2, 'Juan', 'Pérez', 'juan@gmail.com', '3101234567', 'Medellín', '123456', 1, '2026-07-29 14:24:24'),
+(3, 'María', 'Gómez', 'maria@gmail.com', '3201234567', 'Cali', '123456', 1, '2026-07-29 14:24:24'),
+(4, 'jeronimo cossio', '', 'jeronimo.cossio.sanchez@gmail.com', '123234', NULL, '$2y$10$szjzBJH13fwfUuhLlN/Bju9SlK99aXA3vzwaaPc607ko0.Zd6W4j2', 1, '2026-07-29 14:40:01'),
+(9, 'jeronimo', 'cossio sance', 'jejene@gmail.com', '123234', 'medellin', '$2y$10$0P1uBlyJhq5bhCcO7GKthO96ZC/kOmoekGZDPp5kWMYXAKqgcS4g2', 1, '2026-07-29 15:03:15'),
+(10, 'jeronimo cossio', 'cossio sance', 'dewxx@gmail.com', '123234', 'medellin', '$2y$10$Kyw14/WR4u.oT2BjQZ/ujegLqWL1YFxTdJ3VpQFgr/ErmHJpL0eCi', 1, '2026-07-29 15:16:59'),
+(11, 'Jerónimo Cossio', 'Sánchez', 'jero@gmail.com', NULL, NULL, 'PEGA_AQUI_EL_HASH', 2, CURRENT_TIMESTAMP);
 
 --
 -- Índices para tablas volcadas
@@ -290,7 +311,8 @@ ALTER TABLE `solicitudes_adopcion`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id_usuario`),
-  ADD UNIQUE KEY `correo` (`correo`);
+  ADD UNIQUE KEY `correo` (`correo`),
+  ADD KEY `id_rol` (`id_rol`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -388,8 +410,12 @@ ALTER TABLE `mascota_categoria`
 ALTER TABLE `solicitudes_adopcion`
   ADD CONSTRAINT `solicitudes_adopcion_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
   ADD CONSTRAINT `solicitudes_adopcion_ibfk_2` FOREIGN KEY (`id_mascota`) REFERENCES `mascotas` (`id_mascota`);
+
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_usuarios_roles` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON UPDATE CASCADE ON DELETE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+select * from usuarios;
