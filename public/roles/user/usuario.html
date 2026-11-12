@@ -46,10 +46,10 @@
                         </ul>
 
                         <!-- Barra de búsqueda -->
-                        <form class="d-flex me-3 mb-2 mb-lg-0" role="search">
+                        <form class="d-flex me-3 mb-2 mb-lg-0" id="busquedaForm" role="search">
                             <div class="input-group">
                                 <input class="form-control form-control-sm rounded-start-pill" type="search"
-                                    placeholder="Buscar mascota...">
+                                    id="busquedaMascotas" placeholder="Buscar mascota..." aria-label="Buscar mascota">
                                 <button class="btn btn-adoptar btn-sm rounded-end-pill" type="submit">
                                     <i class="bi bi-search"></i>
                                 </button>
@@ -231,19 +231,25 @@
             </div>
 
             <!-- Filtros rápidos -->
-            <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
-                <button class="btn btn-adoptar btn-sm rounded-pill active">Todos</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-circle me-1"
+            <div class="d-flex flex-wrap gap-2 justify-content-center mb-4" id="filtrosMascotas" role="group"
+                aria-label="Filtrar mascotas">
+                <button type="button" class="btn btn-adoptar btn-sm rounded-pill active" data-filtro="todos"
+                    aria-pressed="true">Todos</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="perro"
+                    aria-pressed="false"><i class="bi bi-circle me-1"
                         style="color:var(--primary)"></i>Perros</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-circle me-1"
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="gato"
+                    aria-pressed="false"><i class="bi bi-circle me-1"
                         style="color:var(--secondary)"></i>Gatos</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill">Cachorros</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill">Adultos</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="cachorro"
+                    aria-pressed="false">Cachorros</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="adulto"
+                    aria-pressed="false">Adultos</button>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-4" id="listaMascotas">
                 <!-- Card 1 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <span class="position-absolute badge badge-urgente m-2">
                             <i class="position-absolute badge bg-info text-sentence m-2"></i>Adulto
@@ -270,7 +276,7 @@
                 </div>
 
                 <!-- Card 2 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://static.wikia.nocookie.net/gatopedia/images/9/95/Gatos-carey-.jpg/revision/latest?cb=20210424185413&path-prefix=es"
                             class="card-img-top" alt="Luna">
@@ -295,7 +301,7 @@
                 </div>
 
                 <!-- Card 3 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="cachorro">
                     <div class="card pet-card h-100">
                         <span class="position-absolute badge bg-info text-dark m-2">Cachorro</span>
                         <img src="/assets/img/perro2.png" class="card-img-top" alt="Rocky">
@@ -319,7 +325,7 @@
                 </div>
 
                 <!-- Card 4 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://es.cats.com/wp-content/uploads/2023/06/one-eyed-disabled-cat.jpg"
                             class="card-img-top" alt="Michi">
@@ -344,7 +350,7 @@
                 </div>
 
                 <!-- Card 5 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <span class="position-absolute badge badge-urgente m-2">
                             <i class="position-absolute badge bg-info text-dark m-2"></i>Adulto
@@ -371,7 +377,7 @@
                 </div>
 
                 <!-- Card 6 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://www.rover.com/blog/wp-content/uploads/cat-breathing-fast-orange-kitten-1024x575.jpg"
                             class="card-img-top" alt="Canela">
@@ -396,9 +402,9 @@
                 </div>
 
                 <!-- Card 7 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="cachorro">
                     <div class="card pet-card h-100">
-                        <span class="position-absolute badge badge-urgente m-2">Adulto
+                        <span class="position-absolute badge badge-urgente m-2">Cachorro
                             <i class="position-absolute badge bg-info text-dark m-2"></i></span>
                         <img src="https://www.ortocanis.com/blog/wp-content/uploads/2015/12/marcelino3.jpg"
                             class="card-img-top" alt="Toby">
@@ -422,7 +428,7 @@
                 </div>
 
                 <!-- Card 8 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://images.unsplash.com/photo-1586289883499-f11d28aaf52f?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                             class="card-img-top" alt="Azul">
@@ -448,7 +454,8 @@
             </div>
 
             <div class="text-center mt-5">
-                <button class="btn btn-outline-secondary rounded-pill px-5 fw-bold">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-5 fw-bold"
+                    id="verTodasMascotas">
                     <i class="bi bi-grid me-2"></i>Ver todas las mascotas
                 </button>
             </div>
@@ -633,21 +640,22 @@
                 <div class="col-12 col-md-4 col-lg-4">
                     <h6 class="text-white fw-bold mb-3">¿Quieres ayudar?</h6>
                     <p class="small mb-3">Suscríbete y recibe alertas de nuevas mascotas disponibles.</p>
-                    <form>
+                    <form id="newsletterForm">
                         <div class="input-group mb-2">
                             <input type="email"
                                 class="form-control form-control-sm rounded-start-pill bg-white border-0"
-                                placeholder="tu@email.com">
+                                id="newsletterEmail" placeholder="tu@email.com" required>
                             <button class="btn btn-adoptar btn-sm rounded-end-pill" type="submit">
                                 <i class="bi bi-send-fill"></i>
                             </button>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="newsCheck">
+                            <input class="form-check-input" type="checkbox" id="newsCheck" required>
                             <label class="form-check-label small" for="newsCheck">
                                 Acepto recibir notificaciones
                             </label>
                         </div>
+                        <div id="newsletterFeedback" class="small mt-2" role="status" aria-live="polite"></div>
                     </form>
                 </div>
             </div>
@@ -682,7 +690,6 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body px-4 py-4">
-                    <!-- NUEVO: selector para descargar reporte de mascota -->
                     <div class="mb-4">
                         <label for="reportPetSelect" class="form-label fw-bold small">Descargar reporte de la mascota</label>
                         <div class="d-flex gap-2">
@@ -696,31 +703,33 @@
                     </div>
 
                     <p class="text-muted small mb-4">Completa este formulario y nuestro equipo se pondrá en contacto contigo en menos de 24 horas.</p>
-                    <form>
+                    <form id="adopcionForm">
                         <div class="row g-3">
                             <div class="col-12 col-md-6">
                                 <div class="form-floating">
                                     <input class="form-control rounded-3" type="text" id="adNombre"
-                                        placeholder="nombre">
+                                        placeholder="nombre" required>
                                     <label for="adNombre">Nombre completo</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-floating">
-                                    <input class="form-control rounded-3" type="email" id="adEmail" placeholder="email">
+                                    <input class="form-control rounded-3" type="email" id="adEmail"
+                                        placeholder="email" required>
                                     <label for="adEmail">Correo electrónico</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-floating">
-                                    <input class="form-control rounded-3" type="tel" id="adTel" placeholder="tel">
+                                    <input class="form-control rounded-3" type="tel" id="adTel"
+                                        placeholder="tel" required>
                                     <label for="adTel">Teléfono de contacto</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-floating">
                                     <input class="form-control rounded-3" type="text" id="adCiudad"
-                                        placeholder="ciudad">
+                                        placeholder="ciudad" required>
                                     <label for="adCiudad">Ciudad</label>
                                 </div>
                             </div>
@@ -753,13 +762,15 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="adCompromiso">
+                                    <input class="form-check-input" type="checkbox" id="adCompromiso" required>
                                     <label class="form-check-label small" for="adCompromiso">
                                         Me comprometo a brindar amor, cuidado y responsabilidad a la mascota adoptada.
                                     </label>
                                 </div>
                             </div>
                         </div>
+                        <div id="adopcionFeedback" class="alert d-none mt-3 mb-0" role="status"
+                            aria-live="polite"></div>
                         <div class="d-flex gap-3 mt-4">
                             <button type="submit" class="btn btn-adoptar rounded-pill fw-bold px-4">
                                 <i class="bi bi-send me-2"></i>Enviar Solicitud
@@ -1245,31 +1256,108 @@
         </div>
     </div>
 
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const select = document.getElementById('reportPetSelect');
-    const btn = document.getElementById('downloadReportBtn');
-
-    function updateReportLink() {
-        const id = select.value;
-        if (id) {
-            btn.href = '/report_pet?pet_id=' + encodeURIComponent(id);
-            btn.classList.remove('disabled');
-        } else {
-            btn.href = '#';
-            btn.classList.add('disabled');
-        }
-    }
-
-    if (select && btn) {
-        select.addEventListener('change', updateReportLink);
-        updateReportLink();
-    }
-});
-</script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/usuario.js"></script>
+    <script>
+        const filtrosMascotas = document.querySelectorAll('#filtrosMascotas [data-filtro]');
+        const mascotas = document.querySelectorAll('#listaMascotas .mascota-item');
+        const formularioBusqueda = document.querySelector('#busquedaForm');
+        const campoBusqueda = document.querySelector('#busquedaMascotas');
+        const botonVerTodas = document.querySelector('#verTodasMascotas');
+        const listaMascotas = document.querySelector('#listaMascotas');
+        const mensajeSinResultados = document.createElement('p');
+        let filtroActual = 'todos';
+
+        mensajeSinResultados.className = 'col-12 text-center text-muted d-none';
+        mensajeSinResultados.textContent = 'No se encontraron mascotas con esos criterios.';
+        listaMascotas.append(mensajeSinResultados);
+
+        function actualizarMascotas() {
+            const busqueda = campoBusqueda.value.trim().toLocaleLowerCase('es');
+            let mascotasVisibles = 0;
+
+            mascotas.forEach((mascota) => {
+                const coincideFiltro = filtroActual === 'todos'
+                    || mascota.dataset.especie === filtroActual
+                    || mascota.dataset.edad === filtroActual;
+                const coincideBusqueda = mascota.textContent.toLocaleLowerCase('es').includes(busqueda);
+                const visible = coincideFiltro && coincideBusqueda;
+
+                mascota.classList.toggle('d-none', !visible);
+                if (visible) mascotasVisibles += 1;
+            });
+
+            mensajeSinResultados.classList.toggle('d-none', mascotasVisibles > 0);
+        }
+
+        filtrosMascotas.forEach((boton) => {
+            boton.addEventListener('click', () => {
+                filtroActual = boton.dataset.filtro;
+                filtrosMascotas.forEach((filtroBoton) => {
+                    const seleccionado = filtroBoton === boton;
+                    filtroBoton.classList.toggle('active', seleccionado);
+                    filtroBoton.classList.toggle('btn-adoptar', seleccionado);
+                    filtroBoton.classList.toggle('btn-outline-secondary', !seleccionado);
+                    filtroBoton.setAttribute('aria-pressed', String(seleccionado));
+                });
+
+                actualizarMascotas();
+            });
+        });
+
+        campoBusqueda.addEventListener('input', actualizarMascotas);
+        formularioBusqueda.addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            actualizarMascotas();
+            document.querySelector('#mascotas').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        botonVerTodas.addEventListener('click', () => {
+            filtroActual = 'todos';
+            campoBusqueda.value = '';
+            filtrosMascotas.forEach((boton) => {
+                const seleccionado = boton.dataset.filtro === 'todos';
+                boton.classList.toggle('active', seleccionado);
+                boton.classList.toggle('btn-adoptar', seleccionado);
+                boton.classList.toggle('btn-outline-secondary', !seleccionado);
+                boton.setAttribute('aria-pressed', String(seleccionado));
+            });
+            actualizarMascotas();
+            document.querySelector('#mascotas').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.querySelector('#adopcionForm').addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            const feedback = document.querySelector('#adopcionFeedback');
+            feedback.className = 'alert alert-warning mt-3 mb-0';
+            feedback.textContent = 'Formulario validado. La solicitud no se ha enviado porque esta página aún no está conectada a un servidor.';
+        });
+
+        document.querySelector('#newsletterForm').addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            const feedback = document.querySelector('#newsletterFeedback');
+            feedback.className = 'small mt-2 text-warning';
+            feedback.textContent = 'Formulario validado. La suscripción no se ha guardado porque esta página aún no está conectada a un servidor.';
+        });
+
+        const reportSelect = document.querySelector('#reportPetSelect');
+        const downloadReportButton = document.querySelector('#downloadReportBtn');
+
+        function actualizarEnlaceReporte() {
+            const idMascota = reportSelect.value;
+            downloadReportButton.href = idMascota
+                ? `/report_pet?pet_id=${encodeURIComponent(idMascota)}`
+                : '#';
+            downloadReportButton.classList.toggle('disabled', !idMascota);
+            downloadReportButton.setAttribute('aria-disabled', String(!idMascota));
+        }
+
+        reportSelect.addEventListener('change', actualizarEnlaceReporte);
+        downloadReportButton.addEventListener('click', (evento) => {
+            if (!reportSelect.value) evento.preventDefault();
+        });
+        actualizarEnlaceReporte();
+    </script>
+    <script src="/assets/js/usuario.js"></script>
 </body>
 
 </html>

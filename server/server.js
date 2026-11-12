@@ -21,6 +21,15 @@ const requireLogin = (req, res, next) => (req.session.id_usuario ? next() : res.
 const requireAdmin = (req, res, next) => (req.session.rol === 'administrador' ? next() : res.redirect('/login'));
 const requireLoginApi = (req, res, next) => (req.session.id_usuario ? next() : res.status(401).json({ ok: false }));
 
+const esquemaUsuarios = db.query('SHOW COLUMNS FROM usuarios').then(([rows]) => {
+  const columnas = new Set(rows.map(({ Field }) => Field));
+  const correo = columnas.has('correo') ? 'correo' : columnas.has('email') ? 'email' : null;
+  if (!columnas.has('id_usuario') || !columnas.has('nombre') || !columnas.has('contrasena') || !correo) {
+    throw new Error('La tabla usuarios debe incluir id_usuario, nombre, email o correo, y contrasena.');
+  }
+  return { columnas, correo };
+});
+
 // Las vistas por rol (public/roles) solo se sirven con sesión activa
 app.use('/roles/admin', requireAdmin);
 app.use('/roles/user', requireLogin);
@@ -53,8 +62,11 @@ app.post('/api/login', async (req, res) => {
   const pass = String(req.body.contrasena || '');
   if (!correo || !pass) return fallo('Debes ingresar correo y contraseña.');
   try {
+    const esquema = await esquemaUsuarios;
+    const rol = esquema.columnas.has('rol') ? '`rol`' : "'usuario'";
     const [rows] = await db.query(
-      'SELECT id_usuario, nombre, correo, contrasena, rol FROM usuarios WHERE correo = ?', [correo]);
+      `SELECT id_usuario, nombre, \`${esquema.correo}\` AS correo, contrasena, ${rol} AS rol FROM usuarios WHERE \`${esquema.correo}\` = ?`,
+      [correo]);
     if (rows.length !== 1) return fallo('No existe una cuenta con ese correo.');
     const u = rows[0];
     if (!(await verificar(pass, u.contrasena))) return fallo('Credenciales incorrectas.');
@@ -77,10 +89,21 @@ app.post('/api/registro', async (req, res) => {
   if (!nombre || !apellido || !correo || !contrasena) return fallo('Nombre, apellido, correo y contraseña son obligatorios.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return fallo('El correo electrónico no es válido.');
   try {
+    const esquema = await esquemaUsuarios;
     const hash = await bcrypt.hash(contrasena, 10);
+    const valores = new Map([
+      ['nombre', nombre],
+      [esquema.correo, correo],
+      ['contrasena', hash],
+      ['apellido', apellido],
+      ['telefono', telefono],
+      ['direccion', direccion],
+      ['rol', 'usuario'],
+    ]);
+    const columnas = [...valores.keys()].filter((columna) => esquema.columnas.has(columna));
     await db.query(
-      'INSERT INTO usuarios (nombre, apellido, correo, telefono, direccion, contrasena, rol) VALUES (?,?,?,?,?,?,?)',
-      [nombre, apellido, correo, telefono, direccion, hash, 'usuario']);
+      `INSERT INTO usuarios (${columnas.map((columna) => `\`${columna}\``).join(', ')}) VALUES (${columnas.map(() => '?').join(', ')})`,
+      columnas.map((columna) => valores.get(columna)));
     res.json({ ok: true, redirect: '/login' });
   } catch (e) {
     if (e.code === 'ER_DUP_ENTRY') return fallo('Ese correo ya está registrado.');

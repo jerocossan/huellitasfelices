@@ -74,6 +74,16 @@ El proyecto combina un frontend web responsive (HTML, CSS y JavaScript con Boots
 
    El script crea la base de datos `huellitas_felices`.
 
+   Si ya tenías una tabla `usuarios` con la columna `email` (en lugar de
+   `correo`), haz una copia de seguridad y ejecuta una sola vez:
+
+   ```
+   mysql -u root -p huellitas_felices < database/migrar_usuarios.sql
+   ```
+
+   La migración conserva los correos y agrega los campos de perfil y rol que
+   usa el servidor.
+
 4. Crea un archivo `.env` en la raíz a partir de `.env.example`:
 
    ```
