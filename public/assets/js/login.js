@@ -8,6 +8,15 @@ fetch('/api/me').then(r => r.json()).then(d => {
 });
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const d = await enviarJSON('/api/login', form);
-  if (d.ok) location.href = d.redirect; else mostrarAlerta(d.mensaje);
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.fromEntries(new FormData(form))),
+  });
+  if (response.redirected) {
+    location.assign(response.url);
+    return;
+  }
+  const d = await response.json();
+  mostrarAlerta(d.mensaje);
 });
