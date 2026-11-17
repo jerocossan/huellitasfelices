@@ -419,3 +419,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 select * from usuarios;
+INSERT INTO usuarios (   nombre,  apellido,  correo,   telefono,   direccion,   contrasena,id_rol) VALUES ('Nuevo',   'Administrador',   'admin2@huellitasfelices.com',    '3001234567'    'Medellín',   '123456789',   2);
