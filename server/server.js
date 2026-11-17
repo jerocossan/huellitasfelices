@@ -27,6 +27,17 @@ const esquemaUsuarios = db.query('SHOW COLUMNS FROM usuarios').then(([rows]) => 
   return { columnas, correo };
 });
 
+const esquemaSolicitudes = db.query('SHOW COLUMNS FROM solicitudes_adopcion').then(([rows]) => {
+  const columnas = new Set(rows.map((columna) => columna.Field));
+  const estado = columnas.has('estado_solicitud')
+    ? 'estado_solicitud'
+    : columnas.has('estado') ? 'estado' : null;
+  if (!estado) {
+    throw new Error('La tabla solicitudes_adopcion debe incluir la columna estado o estado_solicitud.');
+  }
+  return { estado };
+});
+
 const ROLE_PANELS = new Map([
   [1, { name: 'usuario', path: '/usuario' }],
   [2, { name: 'admin', path: '/administrador' }],
@@ -241,10 +252,15 @@ app.get('/api/admin/usuarios', requireAdmin, async (req, res) => {
 
 app.get('/api/admin/solicitudes', requireAdmin, async (req, res) => {
   try {
+    const esquema = await esquemaUsuarios;
+    const esquemaSolicitud = await esquemaSolicitudes;
+    const nombreUsuario = esquema.columnas.has('apellido')
+      ? "CONCAT_WS(' ', u.nombre, u.apellido)"
+      : 'u.nombre';
     const [rows] = await db.query(
-      `SELECT s.id_solicitud, CONCAT_WS(' ', u.nombre, u.apellido) AS usuario,
+      `SELECT s.id_solicitud, ${nombreUsuario} AS usuario,
               m.nombre AS mascota, DATE_FORMAT(s.fecha_solicitud, '%d/%m/%Y') AS fecha,
-              s.estado
+              s.\`${esquemaSolicitud.estado}\` AS estado
        FROM solicitudes_adopcion s
        JOIN usuarios u ON u.id_usuario = s.id_usuario
        JOIN mascotas m ON m.id_mascota = s.id_mascota
@@ -266,6 +282,7 @@ app.patch('/api/admin/solicitudes/:id/estado', requireAdmin, async (req, res) =>
     return res.status(400).json({ ok: false, mensaje: 'El estado solicitado no es válido.' });
   }
   try {
+    const esquema = await esquemaSolicitudes;
     const [[solicitud]] = await db.query(
       'SELECT id_solicitud FROM solicitudes_adopcion WHERE id_solicitud = ?',
       [idSolicitud]);
@@ -273,7 +290,7 @@ app.patch('/api/admin/solicitudes/:id/estado', requireAdmin, async (req, res) =>
       return res.status(404).json({ ok: false, mensaje: 'No se encontró la solicitud.' });
     }
     await db.query(
-      'UPDATE solicitudes_adopcion SET estado = ? WHERE id_solicitud = ?',
+      `UPDATE solicitudes_adopcion SET \`${esquema.estado}\` = ? WHERE id_solicitud = ?`,
       [estado, idSolicitud]);
     res.json({ ok: true, id_solicitud: idSolicitud, estado });
   } catch (error) {
