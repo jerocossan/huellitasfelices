@@ -2,7 +2,6 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const session = require('express-session');
-const bcrypt = require('bcryptjs');
 const db = require('./conexion');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -87,9 +86,8 @@ app.use(express.static(PUBLIC));
 // Páginas públicas: /login, /registro, /perros ... (public/pages, sin extensión .html)
 app.use(express.static(path.join(PUBLIC, 'pages'), { extensions: ['html'] }));
 
-// Acepta hashes bcrypt de PHP ($2y$) y contraseñas antiguas en texto plano
+// Las contraseñas se almacenan y comparan en texto plano.
 async function verificar(plano, guardada) {
-  if (/^\$2[aby]\$/.test(guardada)) return bcrypt.compare(plano, guardada.replace(/^\$2y/, '$2a'));
   return plano === guardada;
 }
 
@@ -167,9 +165,6 @@ app.post('/api/login', async (req, res) => {
     if (rows.length !== 1) return fallo('No existe una cuenta con ese correo.');
     const u = rows[0];
     if (!(await verificar(pass, u.contrasena))) return fallo('Credenciales incorrectas.');
-    if (!u.contrasena.startsWith('$2')) { // migrar texto plano a hash
-      await db.query('UPDATE usuarios SET contrasena = ? WHERE id_usuario = ?', [await bcrypt.hash(pass, 10), u.id_usuario]);
-    }
     const role = ROLE_PANELS.get(Number(u.id_rol));
     if (!role || role.name !== u.rol) return fallo('La cuenta tiene un rol no válido.');
     req.session.regenerate((err) => {
@@ -196,11 +191,10 @@ app.post('/api/registro', async (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return fallo('El correo electrónico no es válido.');
   try {
     const esquema = await esquemaUsuarios;
-    const hash = await bcrypt.hash(contrasena, 10);
     const valores = new Map([
       ['nombre', esquema.columnas.has('apellido') ? nombre : `${nombre} ${apellido}`],
       [esquema.correo, correo],
-      ['contrasena', hash],
+      ['contrasena', contrasena],
       ['apellido', apellido],
       ['telefono', telefono],
       ['direccion', direccion],
@@ -229,13 +223,62 @@ app.post('/api/registro', async (req, res) => {
 app.get('/api/admin/usuarios', requireAdmin, async (req, res) => {
   try {
     const esquema = await esquemaUsuarios;
+    const nombre = esquema.columnas.has('apellido')
+      ? "CONCAT_WS(' ', u.nombre, u.apellido)"
+      : 'u.nombre';
     const [rows] = await db.query(
-      `SELECT u.id_usuario, u.nombre, u.\`${esquema.correo}\` AS correo, r.nombre_rol AS rol
+      `SELECT u.id_usuario, ${nombre} AS nombre, u.\`${esquema.correo}\` AS correo, r.nombre_rol AS rol
        FROM usuarios u JOIN roles r ON r.id_rol = u.id_rol ORDER BY u.id_usuario`);
-    res.json(rows);
+    res.json(rows.map((usuario) => ({
+      ...usuario,
+      estado: Number(usuario.id_usuario) === Number(req.session.id_usuario) ? 'Online' : 'Activo',
+    })));
   } catch (error) {
     console.error(error);
     res.status(500).json({ ok: false, mensaje: 'No fue posible consultar los usuarios.' });
+  }
+});
+
+app.get('/api/admin/solicitudes', requireAdmin, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT s.id_solicitud, CONCAT_WS(' ', u.nombre, u.apellido) AS usuario,
+              m.nombre AS mascota, DATE_FORMAT(s.fecha_solicitud, '%d/%m/%Y') AS fecha,
+              s.estado
+       FROM solicitudes_adopcion s
+       JOIN usuarios u ON u.id_usuario = s.id_usuario
+       JOIN mascotas m ON m.id_mascota = s.id_mascota
+       ORDER BY s.fecha_solicitud DESC, s.id_solicitud DESC`);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: 'No fue posible consultar las solicitudes.' });
+  }
+});
+
+app.patch('/api/admin/solicitudes/:id/estado', requireAdmin, async (req, res) => {
+  const idSolicitud = Number(req.params.id);
+  const estado = String(req.body.estado || '');
+  if (!Number.isSafeInteger(idSolicitud) || idSolicitud < 1) {
+    return res.status(400).json({ ok: false, mensaje: 'El identificador de la solicitud no es válido.' });
+  }
+  if (!['Aprobada', 'Rechazada'].includes(estado)) {
+    return res.status(400).json({ ok: false, mensaje: 'El estado solicitado no es válido.' });
+  }
+  try {
+    const [[solicitud]] = await db.query(
+      'SELECT id_solicitud FROM solicitudes_adopcion WHERE id_solicitud = ?',
+      [idSolicitud]);
+    if (!solicitud) {
+      return res.status(404).json({ ok: false, mensaje: 'No se encontró la solicitud.' });
+    }
+    await db.query(
+      'UPDATE solicitudes_adopcion SET estado = ? WHERE id_solicitud = ?',
+      [estado, idSolicitud]);
+    res.json({ ok: true, id_solicitud: idSolicitud, estado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: 'No fue posible actualizar la solicitud.' });
   }
 });
 

@@ -55,6 +55,7 @@
                 <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bell-fill"></i> Notificaciones</a></li>
                 <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people-fill"></i> Usuarios</a></li>
                 <li class="nav-item ms-3"><button class="btn btn-admin"><i class="bi bi-person-fill-gear"></i> Administrador</button></li>
+                <li class="nav-item ms-3"><a class="btn btn-admin" href="/api/logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
             </ul>
         </div>
     </div>
@@ -264,6 +265,7 @@
 
 <section class="container mt-5">
     <h2 class="mb-4">Solicitudes de Adopción</h2>
+    <div id="errorSolicitudes" class="alert alert-danger d-none" role="alert"></div>
     <div class="table-responsive">
         <table class="table table-hover table-striped shadow">
             <thead class="table-dark">
@@ -276,33 +278,14 @@
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Juan Pérez</td>
-                    <td>Max</td>
-                    <td>08/07/2026</td>
-                    <td><span class="badge bg-warning">Pendiente</span></td>
-                    <td>
-                        <button class="btn btn-success btn-sm">Aceptar</button>
-                        <button class="btn btn-danger btn-sm">Rechazar</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Laura Gómez</td>
-                    <td>Luna</td>
-                    <td>09/07/2026</td>
-                    <td><span class="badge bg-success">Aceptada</span></td>
-                    <td><button class="btn btn-secondary btn-sm">Ver</button></td>
-                </tr>
-            </tbody>
+            <tbody id="tablaSolicitudes"></tbody>
         </table>
     </div>
 </section>
 
 <section class="container mt-5">
     <h2>Usuarios Registrados</h2>
+    <div id="errorUsuarios" class="alert alert-danger d-none" role="alert"></div>
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead class="table-primary">
@@ -314,29 +297,7 @@
                     <th>Estado</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Juan Pérez</td>
-                    <td>juan@gmail.com</td>
-                    <td>Usuario</td>
-                    <td><span class="badge bg-success">Activo</span></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Laura Gómez</td>
-                    <td>laura@gmail.com</td>
-                    <td>Usuario</td>
-                    <td><span class="badge bg-success">Activo</span></td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Administrador</td>
-                    <td>admin@huellitas.com</td>
-                    <td>Administrador</td>
-                    <td><span class="badge bg-primary">Online</span></td>
-                </tr>
-            </tbody>
+            <tbody id="tablaUsuarios"></tbody>
         </table>
     </div>
 </section>
@@ -358,13 +319,141 @@ const APP = {
         botonesEliminar: document.querySelectorAll(".btn-eliminar"),
         botonesEditar: document.querySelectorAll(".btn-editar"),
         formAgregar: document.getElementById("formAgregar"),
-        formEditar: document.getElementById("formEditar")
+        formEditar: document.getElementById("formEditar"),
+        tablaSolicitudes: document.getElementById("tablaSolicitudes"),
+        tablaUsuarios: document.getElementById("tablaUsuarios"),
+        errorSolicitudes: document.getElementById("errorSolicitudes"),
+        errorUsuarios: document.getElementById("errorUsuarios")
     },
     init() {
         this.setupBuscador();
         this.setupBotonesEliminar();
         this.setupBotonesEditar();
         this.setupFormularios();
+        this.setupSolicitudes();
+        this.cargarSolicitudes();
+        this.cargarUsuarios();
+    },
+    async pedir(url, opciones = {}) {
+        const respuesta = await fetch(url, {
+            credentials: "same-origin",
+            ...opciones,
+            headers: { "Content-Type": "application/json", ...(opciones.headers || {}) }
+        });
+        if (!(respuesta.headers.get("content-type") || "").includes("application/json")) {
+            throw new Error(`El servidor respondió con una página en vez de datos JSON (HTTP ${respuesta.status}). Reinicia el backend y abre el panel desde la dirección de Express, no desde Live Server.`);
+        }
+        const datos = await respuesta.json();
+        if (!respuesta.ok) throw new Error(datos.mensaje || "No fue posible completar la solicitud.");
+        return datos;
+    },
+    mostrarError(elemento, error) {
+        elemento.textContent = error.message;
+        elemento.classList.remove("d-none");
+    },
+    celda(fila, valor) {
+        const celda = document.createElement("td");
+        celda.textContent = valor == null ? "" : String(valor);
+        fila.appendChild(celda);
+        return celda;
+    },
+    async cargarSolicitudes() {
+        try {
+            const solicitudes = await this.pedir("/api/admin/solicitudes");
+            this.elementos.tablaSolicitudes.replaceChildren();
+            if (!solicitudes.length) {
+                const fila = this.elementos.tablaSolicitudes.insertRow();
+                const celda = fila.insertCell();
+                celda.colSpan = 6;
+                celda.textContent = "No hay solicitudes registradas.";
+                return;
+            }
+            solicitudes.forEach((solicitud) => {
+                const fila = this.elementos.tablaSolicitudes.insertRow();
+                this.celda(fila, solicitud.id_solicitud);
+                this.celda(fila, solicitud.usuario);
+                this.celda(fila, solicitud.mascota);
+                this.celda(fila, solicitud.fecha);
+                const celdaEstado = fila.insertCell();
+                const badge = document.createElement("span");
+                const clases = {
+                    Pendiente: "text-bg-warning",
+                    Aprobada: "text-bg-success",
+                    Rechazada: "text-bg-danger"
+                };
+                badge.className = `badge ${clases[solicitud.estado] || "text-bg-secondary"}`;
+                badge.textContent = solicitud.estado === "Aprobada" ? "Aceptada" : solicitud.estado;
+                celdaEstado.appendChild(badge);
+                const celdaAccion = fila.insertCell();
+                if (solicitud.estado === "Pendiente") {
+                    ["Aprobada", "Rechazada"].forEach((estado) => {
+                        const boton = document.createElement("button");
+                        boton.type = "button";
+                        boton.className = `btn btn-${estado === "Aprobada" ? "success" : "danger"} btn-sm me-1`;
+                        boton.dataset.id = solicitud.id_solicitud;
+                        boton.dataset.estado = estado;
+                        boton.textContent = estado === "Aprobada" ? "Aceptar" : "Rechazar";
+                        celdaAccion.appendChild(boton);
+                    });
+                } else {
+                    celdaAccion.textContent = "—";
+                }
+            });
+            this.elementos.errorSolicitudes.classList.add("d-none");
+        } catch (error) {
+            this.mostrarError(this.elementos.errorSolicitudes, error);
+        }
+    },
+    async cargarUsuarios() {
+        try {
+            const usuarios = await this.pedir("/api/admin/usuarios");
+            this.elementos.tablaUsuarios.replaceChildren();
+            if (!usuarios.length) {
+                const fila = this.elementos.tablaUsuarios.insertRow();
+                const celda = fila.insertCell();
+                celda.colSpan = 5;
+                celda.textContent = "No hay usuarios registrados.";
+                return;
+            }
+            const nombresRoles = {
+                usuario: "Usuario",
+                admin: "Administrador",
+                fundacion: "Fundación",
+                especialistas: "Especialista"
+            };
+            usuarios.forEach((usuario) => {
+                const fila = this.elementos.tablaUsuarios.insertRow();
+                this.celda(fila, usuario.id_usuario);
+                this.celda(fila, usuario.nombre);
+                this.celda(fila, usuario.correo);
+                this.celda(fila, nombresRoles[usuario.rol] || usuario.rol);
+                const celdaEstado = fila.insertCell();
+                const badge = document.createElement("span");
+                badge.className = `badge ${usuario.estado === "Online" ? "text-bg-primary" : "text-bg-success"}`;
+                badge.textContent = usuario.estado;
+                celdaEstado.appendChild(badge);
+            });
+            this.elementos.errorUsuarios.classList.add("d-none");
+        } catch (error) {
+            this.mostrarError(this.elementos.errorUsuarios, error);
+        }
+    },
+    setupSolicitudes() {
+        this.elementos.tablaSolicitudes.addEventListener("click", async (evento) => {
+            const boton = evento.target.closest("button[data-id]");
+            if (!boton) return;
+            boton.disabled = true;
+            try {
+                await this.pedir(`/api/admin/solicitudes/${boton.dataset.id}/estado`, {
+                    method: "PATCH",
+                    body: JSON.stringify({ estado: boton.dataset.estado })
+                });
+                await this.cargarSolicitudes();
+            } catch (error) {
+                this.mostrarError(this.elementos.errorSolicitudes, error);
+                boton.disabled = false;
+            }
+        });
     },
     setupBuscador() {
         if (!this.elementos.buscar) return;
