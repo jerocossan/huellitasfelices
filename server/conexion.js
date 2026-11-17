@@ -9,3 +9,4 @@ module.exports = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
 });
+//hola
