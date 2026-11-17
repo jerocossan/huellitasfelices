@@ -2,6 +2,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcryptjs');
 const db = require('./conexion');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -97,8 +98,11 @@ app.use(express.static(PUBLIC));
 // Páginas públicas: /login, /registro, /perros ... (public/pages, sin extensión .html)
 app.use(express.static(path.join(PUBLIC, 'pages'), { extensions: ['html'] }));
 
-// Las contraseñas se almacenan y comparan en texto plano.
+// Acepta hashes bcrypt de PHP ($2y$) y contraseñas antiguas en texto plano.
 async function verificar(plano, guardada) {
+  if (/^\$2[aby]\$/.test(guardada)) {
+    return bcrypt.compare(plano, guardada.replace(/^\$2y/, '$2a'));
+  }
   return plano === guardada;
 }
 
@@ -176,6 +180,9 @@ app.post('/api/login', async (req, res) => {
     if (rows.length !== 1) return fallo('No existe una cuenta con ese correo.');
     const u = rows[0];
     if (!(await verificar(pass, u.contrasena))) return fallo('Credenciales incorrectas.');
+    if (!/^\$2[aby]\$/.test(u.contrasena)) {
+      await db.query('UPDATE usuarios SET contrasena = ? WHERE id_usuario = ?', [await bcrypt.hash(pass, 10), u.id_usuario]);
+    }
     const role = ROLE_PANELS.get(Number(u.id_rol));
     if (!role || role.name !== u.rol) return fallo('La cuenta tiene un rol no válido.');
     req.session.regenerate((err) => {
@@ -202,10 +209,11 @@ app.post('/api/registro', async (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return fallo('El correo electrónico no es válido.');
   try {
     const esquema = await esquemaUsuarios;
+    const hash = await bcrypt.hash(contrasena, 10);
     const valores = new Map([
       ['nombre', esquema.columnas.has('apellido') ? nombre : `${nombre} ${apellido}`],
       [esquema.correo, correo],
-      ['contrasena', contrasena],
+      ['contrasena', hash],
       ['apellido', apellido],
       ['telefono', telefono],
       ['direccion', direccion],

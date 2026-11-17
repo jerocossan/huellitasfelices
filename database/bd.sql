@@ -7,6 +7,7 @@
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 CREATE DATABASE IF NOT EXISTS `huellitas_felices` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `huellitas_felices`;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -418,21 +419,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-select id_usuario, nombre, correo, contrasena from `usuarios`;
-
-USE `huellitas_felices`;
-DELETE FROM usuarios;
-ALTER TABLE usuarios AUTO_INCREMENT = 1;
-select * from usuarios;
-
-UPDATE `usuarios` 
-SET `id_rol` = 2 
-WHERE `id_usuario` = 14;
-
-UPDATE `usuarios` 
-SET `id_rol` = 2 
-WHERE `id_usuario` = 15;
-
-UPDATE `usuarios` 
-SET `id_rol` = 2 
-WHERE `id_usuario` = 16;
