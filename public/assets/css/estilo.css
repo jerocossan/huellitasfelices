@@ -1,223 +1,400 @@
 :root {
-            --primary: #FF6B35;
-            --primary-hover: #e05520;
-            --primary-soft: #fff0e6;
-            --secondary: #4CAF82;
-            --accent: #FFD166;
-            --dark: #2D3748;
-            --light-bg: #FFF8F3;
-            --card-radius: 20px;
-        }
+    --primary: #FF6B35;
+    --primary-hover: #e05520;
+    --primary-soft: #fff0e6;
+    --secondary: #4CAF82;
+    --accent: #FFD166;
+    --dark: #2D3748;
+    --light-bg: #FFF8F3;
+    --card-radius: 20px;
+}
 
-        * { font-family: 'Nunito', sans-serif; }
+* {
+    font-family: 'Nunito', sans-serif;
+}
 
-        html, body {
-            height: 100%;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            background-color: var(--light-bg);
-            color: var(--dark);
-        }
+html,
+body {
+    height: 100%;
+}
 
-        /* ── NAVBAR ── */
-        .navbar-brand {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.6rem;
-            color: var(--primary) !important;
-            letter-spacing: 1px;
-            /* background-color: #ffffff;
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* ── NAVBAR ── */
+.navbar-brand {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    color: var(--primary) !important;
+    letter-spacing: 1px;
+    /* background-color: #ffffff;
             border-radius: 20px;
             box-shadow: 0 4px 16px rgba(0,0,0,.4); */
 
-        }
+}
 
-        .navbar-brand i { color: var(--accent); }
-        .navbar { background-color: #fff !important; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
-        .nav-link { font-weight: 700; color: var(--dark) !important; }
-        .nav-link:hover { color: var(--primary) !important; }
-        .nav-link.active { color: var(--primary) !important; }
+.navbar-brand i {
+    color: var(--accent);
+}
 
-        .btn-adoptar {
-            background: var(--primary);
-            color: #fff;
-            border-radius: 50px;
-            font-weight: 700;
-            border: none;
-            padding: .45rem 1.2rem;
-        }
-        .btn-adoptar:hover { background: var(--primary-hover); color:#fff; }
+.navbar {
+    background-color: #fff !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+}
 
-        /* ── HERO / CAROUSEL ── */
-        .carousel-item img { height: 420px; object-fit: cover; }
+.nav-link {
+    font-weight: 700;
+    color: var(--dark) !important;
+}
 
-        .hero-caption {
-            background: rgba(0,0,0,.55);
-            border-radius: 16px;
-            padding: 20px 28px;
-            max-width: 520px;
-        }
+.nav-link:hover {
+    color: var(--primary) !important;
+}
 
-        /* ── STATS ── */
-        .stats-bar {
-            background: var(--primary);
-            color: #fff;
-            padding: 18px 0;
-            border-radius: 20px;
-        }
-        .stat-item { text-align: center; }
-        .stat-number {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2rem;
-            line-height: 1;
-            color: var(--accent);
-        }
-        .stat-label { font-size: .82rem; font-weight: 700; opacity: .9; }
+.nav-link.active {
+    color: var(--primary) !important;
+}
 
-        /* ── CONTEXTO ── */
-        .context-section { padding: 60px 0; }
-        .context-icon {
-            width: 60px; height: 60px;
-            background: var(--accent);
-            border-radius: 16px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem;
-            color: var(--dark);
-        }
+.btn-adoptar {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50px;
+    font-weight: 700;
+    border: none;
+    padding: .45rem 1.2rem;
+}
 
-        /* ── CARDS MASCOTAS ── */
-        .pet-card {
-            border: none;
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            transition: transform .25s, box-shadow .25s;
-            box-shadow: 0 4px 16px rgba(0,0,0,.08);
-        }
-        .pet-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,.14); }
-        .pet-card .card-img-top {
-            height: 220px;
-            object-fit: cover;
-        }
-        .pet-card .card-body { padding: 18px; }
+.btn-adoptar:hover {
+    background: var(--primary-hover);
+    color: #fff;
+}
 
-        .badge-especie {
-            background: var(--accent);
-            color: var(--dark);
-            font-weight: 700;
-            border-radius: 50px;
-            font-size: .75rem;
-            padding: 4px 12px;
-        }
-        .badge-urgente { background: #FF4757 !important; color: #fff !important; }
+/* ── HERO / CAROUSEL ── */
+.carousel-item img {
+    height: 420px;
+    object-fit: cover;
+}
 
-        .btn-adoptar-card {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 50px;
-            font-weight: 700;
-            width: 100%;
-            padding: .5rem;
-        }
-        .btn-adoptar-card:hover { background: var(--primary-hover); color:#fff; }
-        .btn-detail-card {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            border-radius: 50px;
-            font-weight: 700;
-            width: 100%;
-            padding: .45rem;
-        }
-        .btn-detail-card:hover { background: var(--primary); color:#fff; }
+.hero-caption {
+    background: rgba(0, 0, 0, .55);
+    border-radius: 16px;
+    padding: 20px 28px;
+    max-width: 520px;
+}
 
-        /* ── PASOS ── */
-        .steps-section { background: #fff; padding: 60px 0; }
-        .step-circle {
-            width: 56px; height: 56px; background: var(--primary); color: #fff;
-            font-family: 'Fredoka One', cursive; font-size: 1.4rem; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;
-        }
-        .step-card { text-align: center; padding: 24px 16px; }
+/* ── STATS ── */
+.stats-bar {
+    background: var(--primary);
+    color: #fff;
+    padding: 18px 0;
+    border-radius: 20px;
+}
 
-        /* ── TESTIMONIOS ── */
-        .testimonial-card { background: #fff; border-radius: var(--card-radius); padding: 28px; box-shadow: 0 4px 16px rgba(0,0,0,.07); border: none; }
-        .avatar-img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); }
+.stat-item {
+    text-align: center;
+}
 
-        /* ── FOOTER ── */
-        .footer-main { background-color: var(--dark); color: #adb5bd; }
-        .footer-brand { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: #fff; }
-        .footer-link { color: #adb5bd; text-decoration: none; }
-        .footer-link:hover { color: var(--accent); }
-        .footer-bottom { background-color: #1a202c; color: #6c757d; font-size: .85rem; padding: 14px 0; }
+.stat-number {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--accent);
+}
 
-        /* ── MISC ── */
-        .section-title { font-family: 'Fredoka One', cursive; color: var(--dark); font-size: 2rem; }
-        .section-subtitle { color: #6c757d; font-size: 1rem; }
-        .paw-divider { color: var(--primary); font-size: 1.3rem; letter-spacing: 6px; }
-        .social-icon {
-            width: 36px; height: 36px; border-radius: 50%;
-            display: inline-flex; align-items: center; justify-content: center;
-            text-decoration: none; transition: transform .2s, filter .2s, color .2s; font-size: 1rem; border: none;
-        }
-        .social-icon:hover { transform: translateY(-1px); filter: brightness(.95); color: #fff; }
+.stat-label {
+    font-size: .82rem;
+    font-weight: 700;
+    opacity: .9;
+}
 
-        .btn-facebook {
-            background: #1877F2;
-            color: #fff;
-        }
-        .btn-instagram {
-            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-            color: #fff;
-        }
-        .btn-tiktok {
-            background: #010101;
-            color: #69C9D0;
-        }
-        .btn-whatsapp {
-            background: #25D366;
-            color: #fff;
-        }
+/* ── CONTEXTO ── */
+.context-section {
+    padding: 60px 0;
+}
 
-        .barra {
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,.4);
-        }
+.context-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--accent);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: var(--dark);
+}
 
-        .caja {
-            background-color: var(--primary-soft);
-            border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,.4);
-            padding: 30px;
-        }
+/* ── CARDS MASCOTAS ── */
+.pet-card {
+    border: none;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    transition: transform .25s, box-shadow .25s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+}
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 .25rem rgba(255, 107, 53, .2);
-        }
+.pet-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .14);
+}
 
-        .form-check-input:checked {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
+.pet-card .card-img-top {
+    height: 220px;
+    object-fit: cover;
+}
 
-        .caja .alert-info {
-            color: #663c23;
-            background-color: #fff3e8;
-            border-color: #ffd2b8;
-        }
+.pet-card .card-body {
+    padding: 18px;
+}
 
-        main.page-content {
-            flex: 1 0 auto;
-        }
-        
-        .footer-main,
-        .footer-bottom {
-            flex-shrink: 0;
-            margin-top: 0;
-        }
+.badge-especie {
+    background: var(--accent);
+    color: var(--dark);
+    font-weight: 700;
+    border-radius: 50px;
+    font-size: .75rem;
+    padding: 4px 12px;
+}
+
+.badge-urgente {
+    background: #FF4757 !important;
+    color: #fff !important;
+}
+
+.btn-adoptar-card {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    width: 100%;
+    padding: .5rem;
+}
+
+.btn-adoptar-card:hover {
+    background: var(--primary-hover);
+    color: #fff;
+}
+
+.btn-detail-card {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 50px;
+    font-weight: 700;
+    width: 100%;
+    padding: .45rem;
+}
+
+.btn-detail-card:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* ── PASOS ── */
+.steps-section {
+    background: #fff;
+    padding: 60px 0;
+}
+
+.step-circle {
+    width: 56px;
+    height: 56px;
+    background: var(--primary);
+    color: #fff;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+
+.step-card {
+    text-align: center;
+    padding: 24px 16px;
+}
+
+/* ── TESTIMONIOS ── */
+.testimonial-card {
+    background: #fff;
+    border-radius: var(--card-radius);
+    padding: 28px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .07);
+    border: none;
+}
+
+.avatar-img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+}
+
+/* ── FOOTER ── */
+.footer-main {
+    background-color: var(--dark);
+    color: #adb5bd;
+}
+
+.footer-brand {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.footer-link {
+    color: #adb5bd;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: var(--accent);
+}
+
+.footer-bottom {
+    background-color: #1a202c;
+    color: #6c757d;
+    font-size: .85rem;
+    padding: 14px 0;
+}
+
+/* ── MISC ── */
+.section-title {
+    font-family: 'Fredoka One', cursive;
+    color: var(--dark);
+    font-size: 2rem;
+}
+
+.section-subtitle {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.paw-divider {
+    color: var(--primary);
+    font-size: 1.3rem;
+    letter-spacing: 6px;
+}
+
+.social-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform .2s, filter .2s, color .2s;
+    font-size: 1rem;
+    border: none;
+}
+
+.social-icon:hover {
+    transform: translateY(-1px);
+    filter: brightness(.95);
+    color: #fff;
+}
+
+.btn-facebook {
+    background: #1877F2;
+    color: #fff;
+}
+
+.btn-instagram {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    color: #fff;
+}
+
+.btn-tiktok {
+    background: #010101;
+    color: #69C9D0;
+}
+
+.btn-whatsapp {
+    background: #25D366;
+    color: #fff;
+}
+
+.barra {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+}
+
+.caja {
+    background-color: var(--primary-soft);
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+    padding: 30px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 .2rem rgba(255, 107, 53, .25);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.caja .alert-info {
+    background-color: #fff;
+    border-color: var(--primary);
+    color: var(--dark);
+}
+
+main.page-content {
+    flex: 1 0 auto;
+}
+
+.footer-main,
+.footer-bottom {
+    flex-shrink: 0;
+    margin-top: 0;
+}
+
+
+.opcion-tipo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    padding: 20px 12px;
+    border: 2px solid #e5e5e5;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    transition: all .2s ease;
+}
+
+.opcion-tipo i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.opcion-tipo span {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.opcion-tipo small {
+    font-size: .8rem;
+    opacity: .7;
+}
+
+.opcion-tipo:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+}
