@@ -339,6 +339,7 @@
                     <th>#</th>
                     <th>Usuario</th>
                     <th>Mascota</th>
+                    <th>Detalles</th>
                     <th>Fecha</th>
                     <th>Estado</th>
                     <th>Acción</th>
@@ -430,7 +431,7 @@ const APP = {
             if (!solicitudes.length) {
                 const fila = this.elementos.tablaSolicitudes.insertRow();
                 const celda = fila.insertCell();
-                celda.colSpan = 6;
+                celda.colSpan = 7;
                 celda.textContent = "No hay solicitudes registradas.";
                 return;
             }
@@ -439,6 +440,8 @@ const APP = {
                 this.celda(fila, solicitud.id_solicitud);
                 this.celda(fila, solicitud.usuario);
                 this.celda(fila, solicitud.mascota);
+                const detalles = this.celda(fila, solicitud.comentario || "—");
+                detalles.style.whiteSpace = "pre-line";
                 this.celda(fila, solicitud.fecha);
                 const celdaEstado = fila.insertCell();
                 const badge = document.createElement("span");
