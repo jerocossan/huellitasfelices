@@ -3,6 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const { jsPDF } = require('jspdf');
 const db = require('./conexion');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -26,6 +27,17 @@ const esquemaUsuarios = db.query('SHOW COLUMNS FROM usuarios').then(([rows]) => 
     throw new Error('La tabla usuarios debe incluir id_usuario, nombre, email o correo, contrasena e id_rol. Ejecuta database/migrar_roles.sql.');
   }
   return { columnas, correo };
+});
+
+const esquemaSolicitudes = db.query('SHOW COLUMNS FROM solicitudes_adopcion').then(([rows]) => {
+  const columnas = new Set(rows.map((columna) => columna.Field));
+  const estado = columnas.has('estado_solicitud')
+    ? 'estado_solicitud'
+    : columnas.has('estado') ? 'estado' : null;
+  if (!estado) {
+    throw new Error('La tabla solicitudes_adopcion debe incluir la columna estado o estado_solicitud.');
+  }
+  return { estado };
 });
 
 const ROLE_PANELS = new Map([
@@ -87,9 +99,11 @@ app.use(express.static(PUBLIC));
 // Páginas públicas: /login, /registro, /perros ... (public/pages, sin extensión .html)
 app.use(express.static(path.join(PUBLIC, 'pages'), { extensions: ['html'] }));
 
-// Acepta hashes bcrypt de PHP ($2y$) y contraseñas antiguas en texto plano
+// Acepta hashes bcrypt de PHP ($2y$) y contraseñas antiguas en texto plano.
 async function verificar(plano, guardada) {
-  if (/^\$2[aby]\$/.test(guardada)) return bcrypt.compare(plano, guardada.replace(/^\$2y/, '$2a'));
+  if (/^\$2[aby]\$/.test(guardada)) {
+    return bcrypt.compare(plano, guardada.replace(/^\$2y/, '$2a'));
+  }
   return plano === guardada;
 }
 
@@ -167,7 +181,7 @@ app.post('/api/login', async (req, res) => {
     if (rows.length !== 1) return fallo('No existe una cuenta con ese correo.');
     const u = rows[0];
     if (!(await verificar(pass, u.contrasena))) return fallo('Credenciales incorrectas.');
-    if (!u.contrasena.startsWith('$2')) { // migrar texto plano a hash
+    if (!/^\$2[aby]\$/.test(u.contrasena)) {
       await db.query('UPDATE usuarios SET contrasena = ? WHERE id_usuario = ?', [await bcrypt.hash(pass, 10), u.id_usuario]);
     }
     const role = ROLE_PANELS.get(Number(u.id_rol));
@@ -229,13 +243,68 @@ app.post('/api/registro', async (req, res) => {
 app.get('/api/admin/usuarios', requireAdmin, async (req, res) => {
   try {
     const esquema = await esquemaUsuarios;
+    const nombre = esquema.columnas.has('apellido')
+      ? "CONCAT_WS(' ', u.nombre, u.apellido)"
+      : 'u.nombre';
     const [rows] = await db.query(
-      `SELECT u.id_usuario, u.nombre, u.\`${esquema.correo}\` AS correo, r.nombre_rol AS rol
+      `SELECT u.id_usuario, ${nombre} AS nombre, u.\`${esquema.correo}\` AS correo, r.nombre_rol AS rol
        FROM usuarios u JOIN roles r ON r.id_rol = u.id_rol ORDER BY u.id_usuario`);
-    res.json(rows);
+    res.json(rows.map((usuario) => ({
+      ...usuario,
+      estado: Number(usuario.id_usuario) === Number(req.session.id_usuario) ? 'Online' : 'Activo',
+    })));
   } catch (error) {
     console.error(error);
     res.status(500).json({ ok: false, mensaje: 'No fue posible consultar los usuarios.' });
+  }
+});
+
+app.get('/api/admin/solicitudes', requireAdmin, async (req, res) => {
+  try {
+    const esquema = await esquemaUsuarios;
+    const esquemaSolicitud = await esquemaSolicitudes;
+    const nombreUsuario = esquema.columnas.has('apellido')
+      ? "CONCAT_WS(' ', u.nombre, u.apellido)"
+      : 'u.nombre';
+    const [rows] = await db.query(
+      `SELECT s.id_solicitud, ${nombreUsuario} AS usuario,
+              m.nombre AS mascota, DATE_FORMAT(s.fecha_solicitud, '%d/%m/%Y') AS fecha,
+              s.\`${esquemaSolicitud.estado}\` AS estado
+       FROM solicitudes_adopcion s
+       JOIN usuarios u ON u.id_usuario = s.id_usuario
+       JOIN mascotas m ON m.id_mascota = s.id_mascota
+       ORDER BY s.fecha_solicitud DESC, s.id_solicitud DESC`);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: 'No fue posible consultar las solicitudes.' });
+  }
+});
+
+app.patch('/api/admin/solicitudes/:id/estado', requireAdmin, async (req, res) => {
+  const idSolicitud = Number(req.params.id);
+  const estado = String(req.body.estado || '');
+  if (!Number.isSafeInteger(idSolicitud) || idSolicitud < 1) {
+    return res.status(400).json({ ok: false, mensaje: 'El identificador de la solicitud no es válido.' });
+  }
+  if (!['Aprobada', 'Rechazada'].includes(estado)) {
+    return res.status(400).json({ ok: false, mensaje: 'El estado solicitado no es válido.' });
+  }
+  try {
+    const esquema = await esquemaSolicitudes;
+    const [[solicitud]] = await db.query(
+      'SELECT id_solicitud FROM solicitudes_adopcion WHERE id_solicitud = ?',
+      [idSolicitud]);
+    if (!solicitud) {
+      return res.status(404).json({ ok: false, mensaje: 'No se encontró la solicitud.' });
+    }
+    await db.query(
+      `UPDATE solicitudes_adopcion SET \`${esquema.estado}\` = ? WHERE id_solicitud = ?`,
+      [estado, idSolicitud]);
+    res.json({ ok: true, id_solicitud: idSolicitud, estado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: 'No fue posible actualizar la solicitud.' });
   }
 });
 
@@ -277,18 +346,53 @@ app.get('/report_pet', requireLogin, async (req, res) => {
   const [rows] = await db.query('SELECT * FROM mascotas WHERE id_mascota = ?', [Number(req.query.pet_id) || 0]);
   if (!rows.length) return res.status(404).send('Mascota no encontrada');
   const m = rows[0];
-  res.attachment(`reporte_${m.nombre}.txt`).type('text/plain').send(
-`REPORTE DE MASCOTA - Huellitas Felices
-Nombre: ${m.nombre}
-Especie: ${m.especie}
-Raza: ${m.raza ?? '-'}
-Edad: ${m.edad ?? '-'} años
-Sexo: ${m.sexo ?? '-'}
-Tamaño: ${m.tamano ?? '-'}
-Color: ${m.color ?? '-'}
-Estado: ${m.estado}
-Descripción: ${m.descripcion ?? '-'}
-`);
+  const pdf = new jsPDF();
+  let y = 20;
+
+  pdf.setFontSize(18);
+  pdf.text('REPORTE DE MASCOTA', 105, y, { align: 'center' });
+  y += 10;
+  pdf.setFontSize(12);
+  pdf.text('Huellitas Felices', 105, y, { align: 'center' });
+  y += 14;
+
+  const campos = [
+    ['Nombre', m.nombre],
+    ['Especie', m.especie],
+    ['Raza', m.raza ?? '-'],
+    ['Edad', m.edad != null ? `${m.edad} anos` : '-'],
+    ['Sexo', m.sexo ?? '-'],
+    ['Tamano', m.tamano ?? '-'],
+    ['Estado', m.estado],
+  ];
+
+  pdf.setFontSize(11);
+  for (const [etiqueta, valor] of campos) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(`${etiqueta}:`, 20, y);
+    pdf.setFont('helvetica', 'normal');
+    const texto = String(valor ?? '-');
+    const lineas = pdf.splitTextToSize(texto, 155);
+    pdf.text(lineas, 55, y);
+    y += Math.max(8, lineas.length * 6);
+  }
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('Descripcion:', 20, y);
+  y += 7;
+  pdf.setFont('helvetica', 'normal');
+  const descripcion = pdf.splitTextToSize(String(m.descripcion ?? '-'), 170);
+  pdf.text(descripcion, 20, y);
+
+  const nombreSeguro = String(m.nombre || 'mascota')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9_-]/g, '_');
+  const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="reporte_${nombreSeguro}.pdf"`);
+  res.send(pdfBuffer);
 });
 
 app.listen(process.env.PORT || 3000, () => console.log(`http://localhost:${process.env.PORT || 3000}`));
