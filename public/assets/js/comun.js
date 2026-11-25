@@ -8,10 +8,18 @@ function mostrarAlerta(msg, tipo = 'danger') {
   box.appendChild(d);
 }
 async function enviarJSON(url, form) {
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(Object.fromEntries(new FormData(form))),
-  });
-  return r.json();
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(new FormData(form))),
+    });
+    const contentType = r.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('No fue posible conectar con el servidor.');
+    }
+    return await r.json();
+  } catch (error) {
+    return { ok: false, mensaje: error.message || 'No fue posible conectar con el servidor.' };
+  }
 }

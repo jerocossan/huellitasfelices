@@ -6,30 +6,31 @@
     <title>Huellitas Felices | Panel Administrador</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/estilo.css">
 
 <style>
-        :root { --color-primary: #ff914d; --color-success: #28a745; --color-warning: #ffc107; --color-danger: #dc3545; --color-dark: #343a40; --color-light: #f8f9fa; --color-white: #ffffff; --transition: 0.3s ease; --radius: 20px; --shadow: 0 5px 15px rgba(0,0,0,.15); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        :root { --color-primary: #FF6B35; --color-success: #4CAF82; --color-warning: #FFD166; --color-danger: #dc3545; --color-dark: #2D3748; --color-light: #FFF8F3; --color-white: #ffffff; --transition: 0.25s ease; --radius: 20px; --shadow: 0 4px 16px rgba(0,0,0,.08); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
         body { background: var(--color-light); min-height: 100vh; display: flex; flex-direction: column; }
-        .navbar { background: var(--color-primary); box-shadow: var(--shadow); }
-        .navbar-brand { font-size: 28px; font-weight: bold; color: var(--color-white) !important; }
-        .nav-link { color: var(--color-white) !important; font-weight: 500; transition: var(--transition); }
-        .nav-link:hover { color: #ffe9d6 !important; }
-        .btn-admin { background: var(--color-white); color: var(--color-primary); border-radius: 30px; padding: 8px 20px; font-weight: bold; transition: var(--transition); border: none; cursor: pointer; }
-        .btn-admin:hover { background: #fff2ea; transform: scale(1.05); }
+        .navbar { background: var(--color-white) !important; box-shadow: var(--shadow); }
+        .navbar-brand { font-family: 'Fredoka One', cursive; font-size: 28px; color: var(--color-primary) !important; letter-spacing: 1px; }
+        .nav-link { color: var(--color-dark) !important; font-weight: 700; transition: var(--transition); }
+        .nav-link:hover, .nav-link.active { color: var(--color-primary) !important; }
+        .btn-admin { background: var(--color-primary); color: var(--color-white); border-radius: 30px; padding: 8px 20px; font-weight: 700; transition: var(--transition); border: none; cursor: pointer; }
+        .btn-admin:hover { background: #e05520; color: var(--color-white); transform: translateY(-2px); }
         .titulo { text-align: center; margin: 40px 0 30px; }
-        .titulo h1 { color: var(--color-primary); font-size: 45px; font-weight: bold; }
+        .titulo h1 { color: var(--color-dark); font-family: 'Fredoka One', cursive; font-size: 45px; }
         .titulo p { color: #666; font-size: 18px; }
         .card-estadistica { border: none; border-radius: var(--radius); transition: var(--transition); cursor: pointer; }
         .card-estadistica:hover { transform: translateY(-10px); box-shadow: 0 10px 25px rgba(0,0,0,.15); }
         .card-estadistica i { font-size: 45px; }
         .card-estadistica h2 { margin-top: 10px; color: var(--color-primary); }
-        .btn-agregar { background: var(--color-success); color: var(--color-white); border-radius: 30px; padding: 12px 25px; font-weight: bold; transition: var(--transition); border: none; cursor: pointer; }
-        .btn-agregar:hover { background: #218838; transform: scale(1.05); }
+        .btn-agregar { background: var(--color-success); color: var(--color-white); border-radius: 30px; padding: 12px 25px; font-weight: 700; transition: var(--transition); border: none; cursor: pointer; }
+        .btn-agregar:hover { background: #3f986f; transform: translateY(-2px); }
         .card { border: none; border-radius: var(--radius); overflow: hidden; transition: var(--transition); }
         .card:hover { transform: translateY(-10px); box-shadow: 0 12px 30px rgba(0,0,0,.15); }
-        .card img { height: 250px; object-fit: cover; width: 100%; }
+        .card img { height: 220px; object-fit: cover; width: 100%; }
         .btn-editar { background: var(--color-warning); color: black; border: none; border-radius: 25px; font-weight: bold; transition: var(--transition); cursor: pointer; }
         .btn-eliminar { background: var(--color-danger); color: var(--color-white); border: none; border-radius: 25px; font-weight: bold; transition: var(--transition); cursor: pointer; }
         .btn-editar:hover { background: #e0a800; }
@@ -118,8 +119,8 @@
 <section class="container mt-4">
     <div class="row g-4">
         <div class="col-lg-4 col-md-6">
-            <div class="card shadow">
-                <img src="https://lacaseta.es/wp-content/uploads/2024/05/Labrador_Retriever.jpg" class="card-img-top">
+            <div class="card shadow mascota-card">
+                <img src="https://lacaseta.es/wp-content/uploads/2024/05/Labrador_Retriever.jpg" class="card-img-top" alt="Max">
                 <div class="card-body">
                     <h4 class="fw-bold">Max</h4>
                     <p>Perro Labrador • 2 años</p>
@@ -131,8 +132,8 @@
             </div>
         </div>
         <div class="col-lg-4 col-md-6">
-            <div class="card shadow">
-                <img src="https://static.wikia.nocookie.net/gatopedia/images/9/95/Gatos-carey-.jpg/revision/latest?cb=20210424185413&path-prefix=es" class="card-img-top">
+            <div class="card shadow mascota-card">
+                <img src="https://static.wikia.nocookie.net/gatopedia/images/9/95/Gatos-carey-.jpg/revision/latest?cb=20210424185413&path-prefix=es" class="card-img-top" alt="Luna">
                 <div class="card-body">
                     <h4 class="fw-bold">Luna</h4>
                     <p>Gato • 1 año</p>
@@ -144,11 +145,76 @@
             </div>
         </div>
         <div class="col-lg-4 col-md-6">
-            <div class="card shadow">
-                <img src="/assets/img/perro2.jpg" class="card-img-top">
+            <div class="card shadow mascota-card">
+                <img src="/assets/img/img2.jfif" class="card-img-top" alt="Rocky">
                 <div class="card-body">
                     <h4 class="fw-bold">Rocky</h4>
-                    <p>Perro Criollo • 3 años</p>
+                    <p>Perro Beagle • 4 meses</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card shadow mascota-card">
+                <img src="https://es.cats.com/wp-content/uploads/2023/06/one-eyed-disabled-cat.jpg" class="card-img-top" alt="Michi">
+                <div class="card-body">
+                    <h4 class="fw-bold">Michi</h4>
+                    <p>Gato • 3 años</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card shadow mascota-card">
+                <img src="https://static.bainet.es/clip/e9f33f60-4b5d-46ea-9663-10eb0eaf38bc_source-aspect-ratio_1600w_0.jpg" class="card-img-top" alt="Negrita">
+                <div class="card-body">
+                    <h4 class="fw-bold">Negrita</h4>
+                    <p>Perro mestizo • 5 años</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card shadow mascota-card">
+                <img src="https://www.rover.com/blog/wp-content/uploads/cat-breathing-fast-orange-kitten-1024x575.jpg" class="card-img-top" alt="Canela">
+                <div class="card-body">
+                    <h4 class="fw-bold">Canela</h4>
+                    <p>Gato • 2 años</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card shadow mascota-card">
+                <img src="https://www.ortocanis.com/blog/wp-content/uploads/2015/12/marcelino3.jpg" class="card-img-top" alt="Toby">
+                <div class="card-body">
+                    <h4 class="fw-bold">Toby</h4>
+                    <p>Perro Pug mestizo • 3 meses</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card shadow mascota-card">
+                <img src="https://images.unsplash.com/photo-1586289883499-f11d28aaf52f?q=80&amp;w=687&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="card-img-top" alt="Azul">
+                <div class="card-body">
+                    <h4 class="fw-bold">Azul</h4>
+                    <p>Gato gris y blanco • 4 años</p>
                     <div class="d-grid gap-2">
                         <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
                         <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
@@ -459,7 +525,7 @@ const APP = {
         if (!this.elementos.buscar) return;
         this.elementos.buscar.addEventListener("keyup", (e) => {
             const filtro = e.target.value.toLowerCase();
-            document.querySelectorAll(".card").forEach(card => {
+            document.querySelectorAll(".mascota-card").forEach(card => {
                 card.parentElement.style.display = card.innerText.toLowerCase().includes(filtro) ? "block" : "none";
             });
         });

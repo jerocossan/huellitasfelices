@@ -3,6 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const { jsPDF } = require('jspdf');
 const db = require('./conexion');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -345,18 +346,53 @@ app.get('/report_pet', requireLogin, async (req, res) => {
   const [rows] = await db.query('SELECT * FROM mascotas WHERE id_mascota = ?', [Number(req.query.pet_id) || 0]);
   if (!rows.length) return res.status(404).send('Mascota no encontrada');
   const m = rows[0];
-  res.attachment(`reporte_${m.nombre}.txt`).type('text/plain').send(
-`REPORTE DE MASCOTA - Huellitas Felices
-Nombre: ${m.nombre}
-Especie: ${m.especie}
-Raza: ${m.raza ?? '-'}
-Edad: ${m.edad ?? '-'} años
-Sexo: ${m.sexo ?? '-'}
-Tamaño: ${m.tamano ?? '-'}
-Color: ${m.color ?? '-'}
-Estado: ${m.estado}
-Descripción: ${m.descripcion ?? '-'}
-`);
+  const pdf = new jsPDF();
+  let y = 20;
+
+  pdf.setFontSize(18);
+  pdf.text('REPORTE DE MASCOTA', 105, y, { align: 'center' });
+  y += 10;
+  pdf.setFontSize(12);
+  pdf.text('Huellitas Felices', 105, y, { align: 'center' });
+  y += 14;
+
+  const campos = [
+    ['Nombre', m.nombre],
+    ['Especie', m.especie],
+    ['Raza', m.raza ?? '-'],
+    ['Edad', m.edad != null ? `${m.edad} anos` : '-'],
+    ['Sexo', m.sexo ?? '-'],
+    ['Tamano', m.tamano ?? '-'],
+    ['Estado', m.estado],
+  ];
+
+  pdf.setFontSize(11);
+  for (const [etiqueta, valor] of campos) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(`${etiqueta}:`, 20, y);
+    pdf.setFont('helvetica', 'normal');
+    const texto = String(valor ?? '-');
+    const lineas = pdf.splitTextToSize(texto, 155);
+    pdf.text(lineas, 55, y);
+    y += Math.max(8, lineas.length * 6);
+  }
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('Descripcion:', 20, y);
+  y += 7;
+  pdf.setFont('helvetica', 'normal');
+  const descripcion = pdf.splitTextToSize(String(m.descripcion ?? '-'), 170);
+  pdf.text(descripcion, 20, y);
+
+  const nombreSeguro = String(m.nombre || 'mascota')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9_-]/g, '_');
+  const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="reporte_${nombreSeguro}.pdf"`);
+  res.send(pdfBuffer);
 });
 
 app.listen(process.env.PORT || 3000, () => console.log(`http://localhost:${process.env.PORT || 3000}`));
