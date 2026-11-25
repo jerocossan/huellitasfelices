@@ -27,7 +27,7 @@ El proyecto combina un frontend web responsive (HTML, CSS y JavaScript con Boots
 ### Para visitantes y usuarios
 
 - Página pública con las mascotas en adopción y la guía "¿Cómo adoptar?".
-- Registro e inicio de sesión con contraseñas cifradas (bcrypt).
+- Registro e inicio de sesión con contraseñas almacenadas en texto plano.
 - Panel de usuario con sesión activa y cierre de sesión.
 - Descarga del reporte de una mascota en archivo de texto.
 
@@ -43,7 +43,7 @@ El proyecto combina un frontend web responsive (HTML, CSS y JavaScript con Boots
 | Frontend      | HTML5, CSS3, JavaScript, Bootstrap 5, Bootstrap Icons |
 | Backend       | Node.js, Express 4                                    |
 | Persistencia  | MySQL / MariaDB, `mysql2`                             |
-| Autenticación | Sesiones con `express-session` y `bcryptjs`           |
+| Autenticación | Sesiones con `express-session` y comparación directa de contraseñas |
 | Configuración | `dotenv`                                              |
 
 ## Requisitos

@@ -1,5 +1,7 @@
 :root {
     --primary: #FF6B35;
+    --primary-hover: #e05520;
+    --primary-soft: #fff0e6;
     --secondary: #4CAF82;
     --accent: #FFD166;
     --dark: #2D3748;
@@ -67,7 +69,7 @@ body {
 }
 
 .btn-adoptar:hover {
-    background: #e05520;
+    background: var(--primary-hover);
     color: #fff;
 }
 
@@ -174,7 +176,7 @@ body {
 }
 
 .btn-adoptar-card:hover {
-    background: #e05520;
+    background: var(--primary-hover);
     color: #fff;
 }
 
@@ -327,10 +329,27 @@ body {
 }
 
 .caja {
-    background-color: #fff0e6;
+    background-color: var(--primary-soft);
     border-radius: 20px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
     padding: 30px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 .2rem rgba(255, 107, 53, .25);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.caja .alert-info {
+    background-color: #fff;
+    border-color: var(--primary);
+    color: var(--dark);
 }
 
 main.page-content {
