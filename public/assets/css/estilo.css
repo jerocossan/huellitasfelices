@@ -134,7 +134,7 @@ body {
     border-radius: var(--card-radius);
     overflow: hidden;
     transition: transform .25s, box-shadow .25s;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+    box-shadow: 0 4px 16px rgba(46, 46, 46, 0.24);
 }
 
 .pet-card:hover {
