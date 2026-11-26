@@ -18,8 +18,6 @@ app.use(session({
   cookie: { httpOnly: true, sameSite: 'lax' },
 }));
 
-const requireLoginApi = (req, res, next) => (req.session.id_usuario ? next() : res.status(401).json({ ok: false }));
-
 const esquemaUsuarios = db.query('SHOW COLUMNS FROM usuarios').then(([rows]) => {
   const columnas = new Map(rows.map((columna) => [columna.Field, columna]));
   const correo = columnas.has('correo') ? 'correo' : columnas.has('email') ? 'email' : null;
@@ -34,10 +32,27 @@ const esquemaSolicitudes = db.query('SHOW COLUMNS FROM solicitudes_adopcion').th
   const estado = columnas.has('estado_solicitud')
     ? 'estado_solicitud'
     : columnas.has('estado') ? 'estado' : null;
+  const comentario = columnas.has('comentario') ? 'comentario' : null;
+  const tipoVivienda = columnas.has('tipo_vivienda') ? 'tipo_vivienda' : null;
+  const motivo = columnas.has('motivo') ? 'motivo' : null;
   if (!estado) {
     throw new Error('La tabla solicitudes_adopcion debe incluir la columna estado o estado_solicitud.');
   }
-  return { estado };
+  if (!comentario && !tipoVivienda && !motivo) {
+    throw new Error('La tabla solicitudes_adopcion debe incluir una columna para guardar los detalles.');
+  }
+  return { estado, comentario, tipoVivienda, motivo };
+});
+
+const esquemaMascotas = db.query('SHOW COLUMNS FROM mascotas').then(([rows]) => {
+  const columnas = new Set(rows.map((columna) => columna.Field));
+  const disponibilidad = columnas.has('disponible')
+    ? 'disponible'
+    : columnas.has('estado') ? 'estado' : null;
+  if (!disponibilidad) {
+    throw new Error('La tabla mascotas debe incluir la columna disponible o estado.');
+  }
+  return { disponibilidad };
 });
 
 const ROLE_PANELS = new Map([
@@ -266,8 +281,22 @@ app.get('/api/admin/solicitudes', requireAdmin, async (req, res) => {
     const nombreUsuario = esquema.columnas.has('apellido')
       ? "CONCAT_WS(' ', u.nombre, u.apellido)"
       : 'u.nombre';
+    const camposDetalles = [];
+    if (esquemaSolicitud.comentario) {
+      camposDetalles.push(`s.\`${esquemaSolicitud.comentario}\``);
+    } else {
+      if (esquemaSolicitud.tipoVivienda) {
+        camposDetalles.push(`CONCAT('Vivienda: ', COALESCE(s.\`${esquemaSolicitud.tipoVivienda}\`, ''))`);
+      }
+      if (esquemaSolicitud.motivo) {
+        camposDetalles.push(`CONCAT('Motivo: ', COALESCE(s.\`${esquemaSolicitud.motivo}\`, ''))`);
+      }
+    }
+    const detallesSolicitud = camposDetalles.length === 1
+      ? camposDetalles[0]
+      : `CONCAT_WS('\\n', ${camposDetalles.join(', ')})`;
     const [rows] = await db.query(
-      `SELECT s.id_solicitud, ${nombreUsuario} AS usuario,
+      `SELECT s.id_solicitud, ${nombreUsuario} AS usuario, ${detallesSolicitud} AS comentario,
               m.nombre AS mascota, DATE_FORMAT(s.fecha_solicitud, '%d/%m/%Y') AS fecha,
               s.\`${esquemaSolicitud.estado}\` AS estado
        FROM solicitudes_adopcion s
@@ -290,21 +319,137 @@ app.patch('/api/admin/solicitudes/:id/estado', requireAdmin, async (req, res) =>
   if (!['Aprobada', 'Rechazada'].includes(estado)) {
     return res.status(400).json({ ok: false, mensaje: 'El estado solicitado no es válido.' });
   }
+  let connection;
   try {
     const esquema = await esquemaSolicitudes;
-    const [[solicitud]] = await db.query(
-      'SELECT id_solicitud FROM solicitudes_adopcion WHERE id_solicitud = ?',
+    const esquemaMascota = await esquemaMascotas;
+    connection = await db.getConnection();
+    await connection.beginTransaction();
+    const [[solicitud]] = await connection.query(
+      `SELECT id_solicitud, id_mascota, \`${esquema.estado}\` AS estado
+       FROM solicitudes_adopcion WHERE id_solicitud = ? FOR UPDATE`,
       [idSolicitud]);
     if (!solicitud) {
+      await connection.rollback();
       return res.status(404).json({ ok: false, mensaje: 'No se encontró la solicitud.' });
     }
-    await db.query(
+    if (solicitud.estado !== 'Pendiente') {
+      await connection.rollback();
+      return res.status(409).json({ ok: false, mensaje: 'La solicitud ya fue atendida.' });
+    }
+    if (estado === 'Aprobada') {
+      const [[mascota]] = await connection.query(
+        `SELECT \`${esquemaMascota.disponibilidad}\` AS disponibilidad
+         FROM mascotas WHERE id_mascota = ? FOR UPDATE`,
+        [solicitud.id_mascota]);
+      const disponible = mascota && (esquemaMascota.disponibilidad === 'disponible'
+        ? Boolean(Number(mascota.disponibilidad))
+        : mascota.disponibilidad === 'Disponible');
+      if (!disponible) {
+        await connection.rollback();
+        return res.status(409).json({ ok: false, mensaje: 'La mascota ya no está disponible para adopción.' });
+      }
+      await connection.query(
+        `UPDATE mascotas SET \`${esquemaMascota.disponibilidad}\` = ?
+         WHERE id_mascota = ?`,
+        [esquemaMascota.disponibilidad === 'disponible' ? 0 : 'Adoptado', solicitud.id_mascota]);
+    }
+    await connection.query(
       `UPDATE solicitudes_adopcion SET \`${esquema.estado}\` = ? WHERE id_solicitud = ?`,
       [estado, idSolicitud]);
+    await connection.commit();
     res.json({ ok: true, id_solicitud: idSolicitud, estado });
   } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error(rollbackError);
+      }
+    }
     console.error(error);
     res.status(500).json({ ok: false, mensaje: 'No fue posible actualizar la solicitud.' });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+app.post('/api/solicitudes', requireUsuario, async (req, res) => {
+  const idMascota = Number(req.body.id_mascota);
+  const ciudad = String(req.body.ciudad || '').trim();
+  const vivienda = String(req.body.vivienda || '');
+  const motivo = String(req.body.motivo || '').trim();
+  const compromiso = String(req.body.compromiso || '');
+  if (!Number.isSafeInteger(idMascota) || idMascota < 1) {
+    return res.status(400).json({ ok: false, mensaje: 'Selecciona una mascota válida.' });
+  }
+  if (!ciudad || ciudad.length > 100 || !['Casa', 'Apartamento', 'Finca / Rural'].includes(vivienda)
+      || !motivo || motivo.length > 3000 || compromiso !== 'true') {
+    return res.status(400).json({ ok: false, mensaje: 'Completa la ciudad, el tipo de vivienda y el motivo de adopción.' });
+  }
+  let connection;
+  try {
+    const esquema = await esquemaSolicitudes;
+    const esquemaMascota = await esquemaMascotas;
+    connection = await db.getConnection();
+    await connection.beginTransaction();
+    const rechazar = async (status, mensaje) => {
+      await connection.rollback();
+      return res.status(status).json({ ok: false, mensaje });
+    };
+    const [[mascota]] = await connection.query(
+      `SELECT \`${esquemaMascota.disponibilidad}\` AS disponibilidad
+       FROM mascotas WHERE id_mascota = ? FOR UPDATE`,
+      [idMascota]);
+    if (!mascota) {
+      return await rechazar(404, 'No se encontró la mascota seleccionada.');
+    }
+    const disponible = esquemaMascota.disponibilidad === 'disponible'
+      ? Boolean(Number(mascota.disponibilidad))
+      : mascota.disponibilidad === 'Disponible';
+    if (!disponible) {
+      return await rechazar(409, 'Esta mascota ya no está disponible para adopción.');
+    }
+    const [[solicitudExistente]] = await connection.query(
+      `SELECT id_solicitud FROM solicitudes_adopcion
+       WHERE id_usuario = ? AND id_mascota = ? AND \`${esquema.estado}\` = 'Pendiente'`,
+      [req.session.id_usuario, idMascota]);
+    if (solicitudExistente) {
+      return await rechazar(409, 'Ya tienes una solicitud pendiente para esta mascota.');
+    }
+    const comentario = `Ciudad: ${ciudad}\nTipo de vivienda: ${vivienda}\nMotivo: ${motivo}`;
+    const columnas = ['id_usuario', 'id_mascota'];
+    const valores = [req.session.id_usuario, idMascota];
+    if (esquema.tipoVivienda) {
+      columnas.push(esquema.tipoVivienda);
+      valores.push(vivienda);
+    }
+    if (esquema.motivo) {
+      columnas.push(esquema.motivo);
+      valores.push(`Ciudad: ${ciudad}\n${motivo}`);
+    }
+    if (esquema.comentario) {
+      columnas.push(esquema.comentario);
+      valores.push(comentario);
+    }
+    const [resultado] = await connection.query(
+      `INSERT INTO solicitudes_adopcion (${columnas.map((columna) => `\`${columna}\``).join(', ')})
+       VALUES (${columnas.map(() => '?').join(', ')})`,
+      valores);
+    await connection.commit();
+    res.status(201).json({ ok: true, id_solicitud: resultado.insertId, mensaje: 'Tu solicitud de adopción fue enviada.' });
+  } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error(rollbackError);
+      }
+    }
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: 'No fue posible enviar la solicitud de adopción.' });
+  } finally {
+    if (connection) connection.release();
   }
 });
 
@@ -337,9 +482,18 @@ app.get('/api/logout', (req, res) => {
   req.session.destroy(() => { res.clearCookie('connect.sid'); res.redirect('/login'); });
 });
 
-app.get('/api/mascotas', requireLoginApi, async (req, res) => {
-  const [rows] = await db.query('SELECT id_mascota AS id, nombre FROM mascotas ORDER BY nombre ASC');
-  res.json(rows);
+app.get('/api/mascotas', async (req, res) => {
+  try {
+    const esquema = await esquemaMascotas;
+    const [rows] = await db.query(
+      `SELECT id_mascota AS id, nombre FROM mascotas
+       WHERE \`${esquema.disponibilidad}\` = ? ORDER BY nombre ASC`,
+      [esquema.disponibilidad === 'disponible' ? 1 : 'Disponible']);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: 'No fue posible consultar las mascotas disponibles.' });
+  }
 });
 
 app.get('/report_pet', requireLogin, async (req, res) => {

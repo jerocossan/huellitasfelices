@@ -1,381 +1,566 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Huellitas Felices | Panel Administrador</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/estilo.css">
 
-<style>
-        :root { --color-primary: #FF6B35; --color-success: #4CAF82; --color-warning: #FFD166; --color-danger: #dc3545; --color-dark: #2D3748; --color-light: #FFF8F3; --color-white: #ffffff; --transition: 0.25s ease; --radius: 20px; --shadow: 0 4px 16px rgba(0,0,0,.08); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
-        body { background: var(--color-light); min-height: 100vh; display: flex; flex-direction: column; }
-        .navbar { background: var(--color-white) !important; box-shadow: var(--shadow); }
-        .navbar-brand { font-family: 'Fredoka One', cursive; font-size: 28px; color: var(--color-primary) !important; letter-spacing: 1px; }
-        .nav-link { color: var(--color-dark) !important; font-weight: 700; transition: var(--transition); }
-        .nav-link:hover, .nav-link.active { color: var(--color-primary) !important; }
-        .btn-admin { background: var(--color-primary); color: var(--color-white); border-radius: 30px; padding: 8px 20px; font-weight: 700; transition: var(--transition); border: none; cursor: pointer; }
-        .btn-admin:hover { background: #e05520; color: var(--color-white); transform: translateY(-2px); }
-        .titulo { text-align: center; margin: 40px 0 30px; }
-        .titulo h1 { color: var(--color-dark); font-family: 'Fredoka One', cursive; font-size: 45px; }
-        .titulo p { color: #666; font-size: 18px; }
-        .card-estadistica { border: none; border-radius: var(--radius); transition: var(--transition); cursor: pointer; }
-        .card-estadistica:hover { transform: translateY(-10px); box-shadow: 0 10px 25px rgba(0,0,0,.15); }
-        .card-estadistica i { font-size: 45px; }
-        .card-estadistica h2 { margin-top: 10px; color: var(--color-primary); }
-        .btn-agregar { background: var(--color-success); color: var(--color-white); border-radius: 30px; padding: 12px 25px; font-weight: 700; transition: var(--transition); border: none; cursor: pointer; }
-        .btn-agregar:hover { background: #3f986f; transform: translateY(-2px); }
-        .card { border: none; border-radius: var(--radius); overflow: hidden; transition: var(--transition); }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 12px 30px rgba(0,0,0,.15); }
-        .card img { height: 220px; object-fit: cover; width: 100%; }
-        .btn-editar { background: var(--color-warning); color: black; border: none; border-radius: 25px; font-weight: bold; transition: var(--transition); cursor: pointer; }
-        .btn-eliminar { background: var(--color-danger); color: var(--color-white); border: none; border-radius: 25px; font-weight: bold; transition: var(--transition); cursor: pointer; }
-        .btn-editar:hover { background: #e0a800; }
-        .btn-eliminar:hover { background: #bb2d3b; }
-        .form-control, .form-select, textarea { border-radius: 10px; transition: var(--transition); }
-        .form-control:focus, .form-select:focus, textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 0.2rem rgba(255, 145, 77, 0.25); }
-        .form-label { font-weight: 500; margin-bottom: 0.5rem; }
-        .was-validated .form-control:invalid { border-color: var(--color-danger); }
-        footer { margin-top: 70px; background: var(--color-dark); color: var(--color-white); text-align: center; padding: 25px; }
+    <style>
+        :root {
+            --color-primary: #FF6B35;
+            --color-success: #4CAF82;
+            --color-warning: #FFD166;
+            --color-danger: #dc3545;
+            --color-dark: #2D3748;
+            --color-light: #FFF8F3;
+            --color-white: #ffffff;
+            --transition: 0.3s ease;
+            --radius: 20px;
+            --shadow: 0 5px 15px rgba(0, 0, 0, .15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background: var(--color-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .titulo {
+            text-align: center;
+            margin: 40px 0 30px;
+        }
+
+        .titulo h1 {
+            color: var(--color-dark);
+            font-family: 'Fredoka One', cursive;
+            font-size: 45px;
+        }
+
+        .titulo p {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .card-estadistica {
+            border: none;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .card-estadistica:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+        }
+
+        .card-estadistica i {
+            font-size: 45px;
+        }
+
+        .card-estadistica h2 {
+            margin-top: 10px;
+            color: var(--color-primary);
+        }
+
+        .btn-agregar {
+            background: var(--color-success);
+            color: var(--color-white);
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-weight: bold;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-agregar:hover {
+            background: #3f986f;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+        }
+
+        .card img {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .btn-editar {
+            background: var(--color-warning);
+            color: black;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .btn-eliminar {
+            background: var(--color-danger);
+            color: var(--color-white);
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .btn-editar:hover {
+            background: #e0b84c;
+        }
+
+        .btn-eliminar:hover {
+            background: #bb2d3b;
+        }
+
+        .form-control,
+        .form-select,
+        textarea {
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.2);
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .was-validated .form-control:invalid {
+            border-color: var(--color-danger);
+        }
+
+        footer {
+            margin-top: 70px;
+            background: var(--color-dark);
+            color: var(--color-white);
+            text-align: center;
+            padding: 25px;
+        }
+
+        .text-primary {
+            color: var(--color-primary) !important;
+        }
+
+        .modal-header.bg-success {
+            background: var(--color-success) !important;
+        }
+
+        .modal-header.bg-warning {
+            background: var(--color-warning) !important;
+        }
     </style>
 </head>
+
 <body>
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="#">🐾 Huellitas Felices</a>
-        <button class="navbar-toggler bg-white" data-bs-toggle="collapse" data-bs-target="#menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="menu">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-house-fill"></i> Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-heart-fill"></i> Mascotas</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bell-fill"></i> Notificaciones</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people-fill"></i> Usuarios</a></li>
-                <li class="nav-item ms-3"><button class="btn btn-admin"><i class="bi bi-person-fill-gear"></i> Administrador</button></li>
-                <li class="nav-item ms-3"><a class="btn btn-admin" href="/api/logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
+        <div class="container barra">
+            <a class="navbar-brand" href="#inicio">
+                <img src="https://png.pngtree.com/png-clipart/20240912/original/pngtree-3d-colorful-dog-and-cat-footprints-shadows-png-image_15995681.png"
+                    width="40" height="40" alt="">
+                Huellitas Felices
+            </a>
 
-<section class="container">
-    <div class="titulo">
-        <h1>Panel de Administración</h1>
-        <p>Administra las mascotas, solicitudes y usuarios de Huellitas Felices.</p>
-    </div>
-</section>
-
-<section class="container">
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card card-estadistica shadow text-center p-4">
-                <i class="bi bi-heart-fill text-danger"></i>
-                <h2>28</h2>
-                <p>Mascotas Disponibles</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-estadistica shadow text-center p-4">
-                <i class="bi bi-house-heart-fill text-success"></i>
-                <h2>126</h2>
-                <p>Mascotas Adoptadas</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-estadistica shadow text-center p-4">
-                <i class="bi bi-person-fill text-primary"></i>
-                <h2>45</h2>
-                <p>Usuarios Registrados</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-estadistica shadow text-center p-4">
-                <i class="bi bi-bell-fill text-warning"></i>
-                <h2>7</h2>
-                <p>Solicitudes Nuevas</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <h2 class="fw-bold">Mascotas Registradas</h2>
-        <div>
-            <button class="btn btn-agregar me-2" data-bs-toggle="modal" data-bs-target="#modalAgregar">
-                <i class="bi bi-plus-circle-fill"></i> Agregar Mascota
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
             </button>
-            <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalNotificaciones">
-                <i class="bi bi-bell-fill"></i> Notificaciones <span class="badge bg-danger">7</span>
-            </button>
-        </div>
-    </div>
-</section>
 
-<section class="container mt-4">
-    <div class="row g-4">
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="https://lacaseta.es/wp-content/uploads/2024/05/Labrador_Retriever.jpg" class="card-img-top" alt="Max">
-                <div class="card-body">
-                    <h4 class="fw-bold">Max</h4>
-                    <p>Perro Labrador • 2 años</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="https://static.wikia.nocookie.net/gatopedia/images/9/95/Gatos-carey-.jpg/revision/latest?cb=20210424185413&path-prefix=es" class="card-img-top" alt="Luna">
-                <div class="card-body">
-                    <h4 class="fw-bold">Luna</h4>
-                    <p>Gato • 1 año</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="/assets/img/img2.jfif" class="card-img-top" alt="Rocky">
-                <div class="card-body">
-                    <h4 class="fw-bold">Rocky</h4>
-                    <p>Perro Beagle • 4 meses</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="https://es.cats.com/wp-content/uploads/2023/06/one-eyed-disabled-cat.jpg" class="card-img-top" alt="Michi">
-                <div class="card-body">
-                    <h4 class="fw-bold">Michi</h4>
-                    <p>Gato • 3 años</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="https://static.bainet.es/clip/e9f33f60-4b5d-46ea-9663-10eb0eaf38bc_source-aspect-ratio_1600w_0.jpg" class="card-img-top" alt="Negrita">
-                <div class="card-body">
-                    <h4 class="fw-bold">Negrita</h4>
-                    <p>Perro mestizo • 5 años</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="https://www.rover.com/blog/wp-content/uploads/cat-breathing-fast-orange-kitten-1024x575.jpg" class="card-img-top" alt="Canela">
-                <div class="card-body">
-                    <h4 class="fw-bold">Canela</h4>
-                    <p>Gato • 2 años</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="https://www.ortocanis.com/blog/wp-content/uploads/2015/12/marcelino3.jpg" class="card-img-top" alt="Toby">
-                <div class="card-body">
-                    <h4 class="fw-bold">Toby</h4>
-                    <p>Perro Pug mestizo • 3 meses</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow mascota-card">
-                <img src="https://images.unsplash.com/photo-1586289883499-f11d28aaf52f?q=80&amp;w=687&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="card-img-top" alt="Azul">
-                <div class="card-body">
-                    <h4 class="fw-bold">Azul</h4>
-                    <p>Gato gris y blanco • 4 años</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
-                        <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav me-auto ms-3">
+                    <li class="nav-item"><a class="nav-link active" href="#inicio">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#mascotas">Mascotas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#solicitudes">Solicitudes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#usuarios">Usuarios</a></li>
+                </ul>
 
-<div class="modal fade" id="modalAgregar" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h4><i class="bi bi-plus-circle-fill"></i> Agregar Mascota</h4>
-                <button class="btn-close bg-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formAgregar" class="needs-validation" novalidate>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="nombreMascota" class="form-label">Nombre *</label>
-                            <input id="nombreMascota" type="text" class="form-control" required pattern="[a-zA-ZáéíóúÁÉÍÓÚ\s]{2,}" title="Mínimo 2 caracteres">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="especieMascota" class="form-label">Especie *</label>
-                            <select id="especieMascota" class="form-select" required>
-                                <option value="">Selecciona una especie</option>
-                                <option value="perro">Perro</option>
-                                <option value="gato">Gato</option>
-                            </select>
-                        </div>
+                <form class="d-flex me-3 mb-2 mb-lg-0" role="search" onsubmit="return false;">
+                    <div class="input-group">
+                        <input class="form-control form-control-sm rounded-start-pill" type="search"
+                            id="buscarMascota" placeholder="Buscar mascota..." aria-label="Buscar mascota">
+                        <button class="btn btn-adoptar btn-sm rounded-end-pill" type="button"
+                            aria-label="Buscar mascotas">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label for="razaMascota" class="form-label">Raza *</label>
-                            <input id="razaMascota" type="text" class="form-control" required pattern="[a-zA-ZáéíóúÁÉÍÓÚ\s]{2,}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="edadMascota" class="form-label">Edad (años) *</label>
-                            <input id="edadMascota" type="number" class="form-control" required min="0" max="50">
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <label for="descripcionMascota" class="form-label">Descripción *</label>
-                        <textarea id="descripcionMascota" rows="4" class="form-control" required minlength="10" maxlength="500"></textarea>
-                    </div>
-                    <div class="mt-3">
-                        <label for="fotoMascota" class="form-label">Foto *</label>
-                        <input id="fotoMascota" type="file" class="form-control" accept="image/*" required>
-                        <small class="text-muted">Formatos: JPG, PNG, GIF</small>
-                    </div>
-                    <button type="submit" class="btn btn-success mt-4 w-100">Guardar Mascota</button>
                 </form>
+
+                <div class="d-lg-none mb-2 d-flex gap-2">
+                    <a href="/administrador" class="btn btn-outline-secondary btn-sm rounded-pill w-50">
+                        <i class="bi bi-person-fill-gear me-1"></i>Administrador
+                    </a>
+                    <a href="/api/logout" class="btn btn-outline-danger btn-sm rounded-pill w-50">
+                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
+                    </a>
+                </div>
+
+                <div class="d-none d-lg-flex gap-2 align-items-center">
+                    <a href="/administrador" class="btn btn-outline-secondary btn-sm rounded-pill">
+                        <i class="bi bi-person-fill-gear me-1"></i>Administrador
+                    </a>
+                    <a href="/api/logout" class="btn btn-outline-danger btn-sm rounded-pill">
+                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="inicio" class="container">
+        <div class="titulo">
+            <h1>Panel de Administración</h1>
+            <p>Administra las mascotas, solicitudes y usuarios de Huellitas Felices.</p>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card card-estadistica shadow text-center p-4">
+                    <i class="bi bi-heart-fill text-danger"></i>
+                    <h2>28</h2>
+                    <p>Mascotas Disponibles</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-estadistica shadow text-center p-4">
+                    <i class="bi bi-house-heart-fill text-success"></i>
+                    <h2>126</h2>
+                    <p>Mascotas Adoptadas</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-estadistica shadow text-center p-4">
+                    <i class="bi bi-person-fill text-primary"></i>
+                    <h2>45</h2>
+                    <p>Usuarios Registrados</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-estadistica shadow text-center p-4">
+                    <i class="bi bi-bell-fill text-warning"></i>
+                    <h2>7</h2>
+                    <p>Solicitudes Nuevas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h2 class="fw-bold">Mascotas Registradas</h2>
+            <div>
+                <button class="btn btn-agregar me-2" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+                    <i class="bi bi-plus-circle-fill"></i> Agregar Mascota
+                </button>
+                <button class="btn btn-admin rounded-pill" data-bs-toggle="modal"
+                    data-bs-target="#modalNotificaciones">
+                    <i class="bi bi-bell-fill"></i> Notificaciones <span class="badge bg-danger">7</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="mascotas" class="container mt-4">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="https://lacaseta.es/wp-content/uploads/2024/05/Labrador_Retriever.jpg"
+                        class="card-img-top" alt="Max">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Max</h4>
+                        <p>Perro Labrador • 2 años</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="https://static.wikia.nocookie.net/gatopedia/images/9/95/Gatos-carey-.jpg/revision/latest?cb=20210424185413&path-prefix=es"
+                        class="card-img-top" alt="Luna">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Luna</h4>
+                        <p>Gato • 1 año</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="/assets/img/img2.jfif" class="card-img-top" alt="Rocky">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Rocky</h4>
+                        <p>Perro Beagle • 4 meses</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="https://es.cats.com/wp-content/uploads/2023/06/one-eyed-disabled-cat.jpg"
+                        class="card-img-top" alt="Michi">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Michi</h4>
+                        <p>Gato • 3 años</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="https://static.bainet.es/clip/e9f33f60-4b5d-46ea-9663-10eb0eaf38bc_source-aspect-ratio_1600w_0.jpg"
+                        class="card-img-top" alt="Negrita">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Negrita</h4>
+                        <p>Perro mestizo • 5 años</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="https://www.rover.com/blog/wp-content/uploads/cat-breathing-fast-orange-kitten-1024x575.jpg"
+                        class="card-img-top" alt="Canela">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Canela</h4>
+                        <p>Gato • 2 años</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="https://www.ortocanis.com/blog/wp-content/uploads/2015/12/marcelino3.jpg"
+                        class="card-img-top" alt="Toby">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Toby</h4>
+                        <p>Perro Pug mestizo • 3 meses</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow mascota-card">
+                    <img src="https://images.unsplash.com/photo-1586289883499-f11d28aaf52f?q=80&amp;w=687&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        class="card-img-top" alt="Azul">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Azul</h4>
+                        <p>Gato gris y blanco • 4 años</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-editar"><i class="bi bi-pencil-square"></i> Editar Mascota</button>
+                            <button class="btn btn-eliminar"><i class="bi bi-trash-fill"></i> Eliminar Mascota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="modalAgregar" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h4><i class="bi bi-plus-circle-fill"></i> Agregar Mascota</h4>
+                    <button class="btn-close bg-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregar" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="nombreMascota" class="form-label">Nombre *</label>
+                                <input id="nombreMascota" type="text" class="form-control" required
+                                    pattern="[a-zA-ZáéíóúÁÉÍÓÚ\s]{2,}" title="Mínimo 2 caracteres">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="especieMascota" class="form-label">Especie *</label>
+                                <select id="especieMascota" class="form-select" required>
+                                    <option value="">Selecciona una especie</option>
+                                    <option value="perro">Perro</option>
+                                    <option value="gato">Gato</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="razaMascota" class="form-label">Raza *</label>
+                                <input id="razaMascota" type="text" class="form-control" required
+                                    pattern="[a-zA-ZáéíóúÁÉÍÓÚ\s]{2,}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edadMascota" class="form-label">Edad (años) *</label>
+                                <input id="edadMascota" type="number" class="form-control" required min="0" max="50">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label for="descripcionMascota" class="form-label">Descripción *</label>
+                            <textarea id="descripcionMascota" rows="4" class="form-control" required minlength="10"
+                                maxlength="500"></textarea>
+                        </div>
+                        <div class="mt-3">
+                            <label for="fotoMascota" class="form-label">Foto *</label>
+                            <input id="fotoMascota" type="file" class="form-control" accept="image/*" required>
+                            <small class="text-muted">Formatos: JPG, PNG, GIF</small>
+                        </div>
+                        <button type="submit" class="btn btn-success mt-4 w-100">Guardar Mascota</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalEditar">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-warning">
-                <h4>Editar Mascota</h4>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formEditar" class="needs-validation" novalidate>
-                    <label for="nombreEditar" class="form-label">Nombre *</label>
-                    <input id="nombreEditar" type="text" class="form-control mb-3" value="Max" required>
-                    <label for="especieEditar" class="form-label">Especie *</label>
-                    <select id="especieEditar" class="form-select mb-3" required>
-                        <option value="perro">Perro</option>
-                        <option value="gato">Gato</option>
-                    </select>
-                    <label for="edadEditar" class="form-label">Edad *</label>
-                    <input id="edadEditar" type="text" class="form-control mb-3" value="2 años" required>
-                    <label for="descripcionEditar" class="form-label">Descripción *</label>
-                    <textarea id="descripcionEditar" class="form-control" rows="4" required>Perro amigable.</textarea>
-                    <button type="submit" class="btn btn-warning w-100 mt-4">Guardar Cambios</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalNotificaciones">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h4>🔔 Notificaciones</h4>
-                <button class="btn-close bg-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-warning"><b>Juan Pérez</b> quiere adoptar a <b>Max</b></div>
-                <div class="alert alert-success"><b>Laura Gómez</b> quiere adoptar a <b>Luna</b></div>
-                <div class="alert alert-info"><b>Carlos Ramírez</b> envió una nueva solicitud.</div>
-                <div class="alert alert-danger">Hay <b>7 solicitudes</b> pendientes.</div>
+    <div class="modal fade" id="modalEditar">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h4>Editar Mascota</h4>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditar" class="needs-validation" novalidate>
+                        <label for="nombreEditar" class="form-label">Nombre *</label>
+                        <input id="nombreEditar" type="text" class="form-control mb-3" value="Max" required>
+                        <label for="especieEditar" class="form-label">Especie *</label>
+                        <select id="especieEditar" class="form-select mb-3" required>
+                            <option value="perro">Perro</option>
+                            <option value="gato">Gato</option>
+                        </select>
+                        <label for="edadEditar" class="form-label">Edad *</label>
+                        <input id="edadEditar" type="text" class="form-control mb-3" value="2 años" required>
+                        <label for="descripcionEditar" class="form-label">Descripción *</label>
+                        <textarea id="descripcionEditar" class="form-control" rows="4"
+                            required>Perro amigable.</textarea>
+                        <button type="submit" class="btn btn-warning w-100 mt-4">Guardar Cambios</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<section class="container mt-5">
-    <div class="row">
-        <div class="col-md-6">
-            <input type="text" id="buscarMascota" class="form-control form-control-lg" placeholder="🔍 Buscar mascota...">
-        </div>
-        <div class="col-md-6 text-end">
-            <button class="btn btn-success btn-lg"><i class="bi bi-download"></i> Exportar Lista</button>
+    <div class="modal fade" id="modalNotificaciones">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h4>🔔 Notificaciones</h4>
+                    <button class="btn-close bg-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning"><b>Juan Pérez</b> quiere adoptar a <b>Max</b></div>
+                    <div class="alert alert-success"><b>Laura Gómez</b> quiere adoptar a <b>Luna</b></div>
+                    <div class="alert alert-info"><b>Carlos Ramírez</b> envió una nueva solicitud.</div>
+                    <div class="alert alert-danger">Hay <b>7 solicitudes</b> pendientes.</div>
+                </div>
+            </div>
         </div>
     </div>
-</section>
 
-<section class="container mt-5">
-    <h2 class="mb-4">Solicitudes de Adopción</h2>
-    <div id="errorSolicitudes" class="alert alert-danger d-none" role="alert"></div>
-    <div class="table-responsive">
-        <table class="table table-hover table-striped shadow">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Usuario</th>
-                    <th>Mascota</th>
+    <section class="container mt-5">
+        <div class="row">
+            <div class="col-12 text-end">
+                <button class="btn btn-success btn-lg"><i class="bi bi-download"></i> Exportar Lista</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="solicitudes" class="container mt-5">
+        <h2 class="mb-4">Solicitudes de Adopción</h2>
+        <div id="errorSolicitudes" class="alert alert-danger d-none" role="alert"></div>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped shadow">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Usuario</th>
+                        <th>Mascota</th>
+                        <th>Detalles</th>
                     <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="tablaSolicitudes"></tbody>
-        </table>
-    </div>
-</section>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaSolicitudes"></tbody>
+            </table>
+        </div>
+    </section>
 
-<section class="container mt-5">
-    <h2>Usuarios Registrados</h2>
-    <div id="errorUsuarios" class="alert alert-danger d-none" role="alert"></div>
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="table-primary">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody id="tablaUsuarios"></tbody>
-        </table>
-    </div>
-</section>
+    <section id="usuarios" class="container mt-5">
+        <h2>Usuarios Registrados</h2>
+        <div id="errorUsuarios" class="alert alert-danger d-none" role="alert"></div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUsuarios"></tbody>
+            </table>
+        </div>
+    </section>
 
-<footer>
-    <div class="container">
-        <h4>🐾 Huellitas Felices</h4>
-        <p>Panel de Administración</p>
-        <hr>
-        <p>© 2026 Todos los derechos reservados</p>
-    </div>
-</footer>
+    <footer>
+        <div class="container">
+            <h4>🐾 Huellitas Felices</h4>
+            <p>Panel de Administración</p>
+            <hr>
+            <p>© 2026 Todos los derechos reservados</p>
+        </div>
+    </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
