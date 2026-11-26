@@ -14,9 +14,7 @@
 </head>
 
 <body>
-    <div class="row">
-        <div class="col-12">
-            <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
+            <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
                 <div class="container barra">
                     <a class="navbar-brand" href="#">
                         <img src="https://png.pngtree.com/png-clipart/20240912/original/pngtree-3d-colorful-dog-and-cat-footprints-shadows-png-image_15995681.png"
@@ -86,8 +84,6 @@
                     </div>
                 </div>
             </nav>
-        </div>
-    </div>
 
     <!-- ═══════════════ CAROUSEL ═══════════════ -->
     <div class="row mb-0">
@@ -165,60 +161,6 @@
         </div>
     </div>
 
-    <!-- ═══════════════ CONTEXTO DEL PROYECTO ═══════════════ -->
-    <section id="nosotros" class="context-section">
-        <div class="container">
-            <div class="text-center mb-5">
-                <div class="paw-divider mb-2">🐾 🐾 🐾</div>
-                <h2 class="section-title">Sobre Huellitas Felices</h2>
-                <p class="section-subtitle">Conoce nuestra misión, nuestra problemática y cómo la tecnología transforma
-                    vidas animales</p>
-            </div>
-
-            <div class="row g-4 align-items-stretch">
-                <!-- Problemática -->
-                <div class="col-12 col-md-4">
-                    <div class="card border-0 rounded-4 h-100 shadow-sm p-4">
-                        <div class="context-icon mb-3">
-                            <i class="bi bi-gitlab"></i>
-                        </div>
-                        <h5 class="fw-bold">La Problemática</h5>
-                        <p class="text-muted">En Colombia, millones de animales domésticos viven en situación de
-                            abandono. Los refugios están sobrepoblados y los procesos de adopción son poco accesibles
-                            para los ciudadanos, lo que dificulta que las mascotas encuentren un hogar a tiempo.</p>
-                    </div>
-                </div>
-                <!-- Entorno -->
-                <div class="col-12 col-md-4">
-                    <div class="card border-0 rounded-4 h-100 shadow-sm p-4">
-                        <div class="context-icon mb-3" style="background:#c3f0dc;">
-                            <i class="bi bi-globe-americas" style="color:var(--secondary);"></i>
-                        </div>
-                        <h5 class="fw-bold">El Entorno</h5>
-                        <p class="text-muted">Actualmente, los refugios y fundaciones de rescate animal gestionan los
-                            procesos de adopción de manera manual o con sistemas poco integrados, generando retrasos,
-                            pérdida de información y experiencias frustrantes tanto para adoptantes como para
-                            voluntarios.</p>
-                    </div>
-                </div>
-                <!-- Propuesta -->
-                <div class="col-12 col-md-4">
-                    <div class="card border-0 rounded-4 h-100 shadow-sm p-4"
-                        style="background: linear-gradient(135deg,#fff8f3,#fff0e6);">
-                        <div class="context-icon mb-3" style="background:var(--primary);">
-                            <i class="bi bi-laptop" style="color:#fff;"></i>
-                        </div>
-                        <h5 class="fw-bold">Nuestra Propuesta</h5>
-                        <p class="text-muted"><strong>Huellitas Felices</strong> es una plataforma web que centraliza el
-                            proceso de adopción de mascotas: permite registrar animales disponibles, buscar por filtros,
-                            gestionar solicitudes de adopción y hacer seguimiento post-adopción, todo desde un entorno
-                            amigable y accesible.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- ═══════════════ MASCOTAS DISPONIBLES ═══════════════ -->
     <section id="mascotas" style="padding: 60px 0; background: #fff;">
         <div class="container">
@@ -229,19 +171,25 @@
             </div>
 
             <!-- Filtros rápidos -->
-            <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
-                <button class="btn btn-adoptar btn-sm rounded-pill active">Todos</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-circle me-1"
+            <div class="d-flex flex-wrap gap-2 justify-content-center mb-4" id="filtrosMascotas" role="group"
+                aria-label="Filtrar mascotas">
+                <button type="button" class="btn btn-adoptar btn-sm rounded-pill active" data-filtro="todos"
+                    aria-pressed="true">Todos</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="perro"
+                    aria-pressed="false"><i class="bi bi-circle me-1"
                         style="color:var(--primary)"></i>Perros</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-circle me-1"
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="gato"
+                    aria-pressed="false"><i class="bi bi-circle me-1"
                         style="color:var(--secondary)"></i>Gatos</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill">Cachorros</button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill">Adultos</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="cachorro"
+                    aria-pressed="false">Cachorros</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-filtro="adulto"
+                    aria-pressed="false">Adultos</button>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-4" id="listaMascotas">
                 <!-- Card 1 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <span class="position-absolute badge badge-urgente m-2">
                             <i class="position-absolute badge bg-info text-sentence m-2"></i>Adulto
@@ -268,7 +216,7 @@
                 </div>
 
                 <!-- Card 2 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://static.wikia.nocookie.net/gatopedia/images/9/95/Gatos-carey-.jpg/revision/latest?cb=20210424185413&path-prefix=es"
                             class="card-img-top" alt="Luna">
@@ -293,7 +241,7 @@
                 </div>
 
                 <!-- Card 3 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="cachorro">
                     <div class="card pet-card h-100">
                         <span class="position-absolute badge bg-info text-dark m-2">Cachorro</span>
                         <img src="/assets/img/img2.jfif" class="card-img-top" alt="Rocky">
@@ -317,7 +265,7 @@
                 </div>
 
                 <!-- Card 4 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://es.cats.com/wp-content/uploads/2023/06/one-eyed-disabled-cat.jpg"
                             class="card-img-top" alt="Michi">
@@ -342,7 +290,7 @@
                 </div>
 
                 <!-- Card 5 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <span class="position-absolute badge badge-urgente m-2">
                             <i class="position-absolute badge bg-info text-dark m-2"></i>Adulto
@@ -369,7 +317,7 @@
                 </div>
 
                 <!-- Card 6 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://www.rover.com/blog/wp-content/uploads/cat-breathing-fast-orange-kitten-1024x575.jpg"
                             class="card-img-top" alt="Canela">
@@ -394,7 +342,7 @@
                 </div>
 
                 <!-- Card 7 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="perro" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <span class="position-absolute badge badge-urgente m-2">Adulto
                             <i class="position-absolute badge bg-info text-dark m-2"></i></span>
@@ -420,7 +368,7 @@
                 </div>
 
                 <!-- Card 8 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mascota-item" data-especie="gato" data-edad="adulto">
                     <div class="card pet-card h-100">
                         <img src="https://images.unsplash.com/photo-1586289883499-f11d28aaf52f?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                             class="card-img-top" alt="Azul">
@@ -1268,6 +1216,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/js/usuario.js"></script>
+
+<script>
+    const botonesFiltro = document.querySelectorAll('#filtrosMascotas [data-filtro]');
+    const tarjetas = document.querySelectorAll('.mascota-item');
+
+    botonesFiltro.forEach((boton) => {
+        boton.addEventListener('click', () => {
+            const filtro = boton.dataset.filtro;
+
+            botonesFiltro.forEach((b) => {
+                const activo = b === boton;
+                b.classList.toggle('active', activo);
+                b.classList.toggle('btn-adoptar', activo);
+                b.classList.toggle('btn-outline-secondary', !activo);
+                b.setAttribute('aria-pressed', String(activo));
+            });
+
+            tarjetas.forEach((tarjeta) => {
+                const coincide = filtro === 'todos'
+                    || tarjeta.dataset.especie === filtro
+                    || tarjeta.dataset.edad === filtro;
+                tarjeta.classList.toggle('d-none', !coincide);
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

@@ -442,3 +442,20 @@ main.page-content {
         font-size: 1.6rem;
     }
 }
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1030;
+    background-color: #fff;
+}
+
+body {
+    padding-top: 72px; /* ajusta a la altura real de tu navbar */
+}
+
+html {
+    scroll-padding-top: 80px; /* para que los enlaces #mascotas, etc. no queden tapados */
+}
