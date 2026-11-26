@@ -688,31 +688,18 @@
                         contigo en menos de 24 horas.</p>
                     <form id="adopcionForm">
                         <div class="row g-3">
-                            <div class="col-12 col-md-6">
+                            <div class="col-12">
                                 <div class="form-floating">
-                                    <input class="form-control rounded-3" type="text" id="adNombre"
-                                        placeholder="nombre" required>
-                                    <label for="adNombre">Nombre completo</label>
+                                    <select class="form-select rounded-3" id="adMascota" name="id_mascota" required>
+                                        <option value="" selected disabled>Selecciona una mascota</option>
+                                    </select>
+                                    <label for="adMascota">Mascota que quieres adoptar</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-floating">
-                                    <input class="form-control rounded-3" type="email" id="adEmail"
-                                        placeholder="email" required>
-                                    <label for="adEmail">Correo electrónico</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="form-floating">
-                                    <input class="form-control rounded-3" type="tel" id="adTel"
-                                        placeholder="tel" required>
-                                    <label for="adTel">Teléfono de contacto</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="form-floating">
-                                    <input class="form-control rounded-3" type="text" id="adCiudad"
-                                        placeholder="ciudad" required>
+                                    <input class="form-control rounded-3" type="text" id="adCiudad" name="ciudad"
+                                        placeholder="ciudad" maxlength="100" required>
                                     <label for="adCiudad">Ciudad</label>
                                 </div>
                             </div>
@@ -720,17 +707,20 @@
                                 <label class="form-label fw-bold small">Tipo de vivienda</label>
                                 <div class="d-flex gap-3 flex-wrap">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="vivienda" id="casa" checked>
+                                        <input class="form-check-input" type="radio" name="vivienda" id="casa"
+                                            value="Casa" required>
                                         <label class="form-check-label" for="casa"><i
                                                 class="bi bi-house me-1"></i>Casa</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="vivienda" id="apto">
+                                        <input class="form-check-input" type="radio" name="vivienda" id="apto"
+                                            value="Apartamento">
                                         <label class="form-check-label" for="apto"><i
                                                 class="bi bi-building me-1"></i>Apartamento</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="vivienda" id="finca">
+                                        <input class="form-check-input" type="radio" name="vivienda" id="finca"
+                                            value="Finca / Rural">
                                         <label class="form-check-label" for="finca"><i class="bi bi-tree me-1"></i>Finca
                                             / Rural</label>
                                     </div>
@@ -738,14 +728,15 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <textarea class="form-control rounded-3" id="adMotivo" placeholder="motivo"
-                                        style="height:90px;"></textarea>
+                                    <textarea class="form-control rounded-3" id="adMotivo" name="motivo"
+                                        placeholder="motivo" maxlength="3000" style="height:90px;" required></textarea>
                                     <label for="adMotivo">¿Por qué quieres adoptar?</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="adCompromiso" required>
+                                    <input class="form-check-input" type="checkbox" id="adCompromiso"
+                                        name="compromiso" value="true" required>
                                     <label class="form-check-label small" for="adCompromiso">
                                         Me comprometo a brindar amor, cuidado y responsabilidad a la mascota adoptada.
                                     </label>
@@ -1307,11 +1298,73 @@
             document.querySelector('#mascotas').scrollIntoView({ behavior: 'smooth' });
         });
 
-        document.querySelector('#adopcionForm').addEventListener('submit', (evento) => {
+        const formularioAdopcion = document.querySelector('#adopcionForm');
+        const selectorMascota = document.querySelector('#adMascota');
+        const feedbackAdopcion = document.querySelector('#adopcionFeedback');
+        let errorMascotas = null;
+        const mascotasDisponibles = fetch('/api/mascotas')
+            .then(async (respuesta) => {
+                if (!respuesta.ok) throw new Error('No fue posible cargar las mascotas disponibles.');
+                const mascotas = await respuesta.json();
+                if (!Array.isArray(mascotas)) throw new Error(mascotas.mensaje || 'No fue posible cargar las mascotas.');
+                mascotas.forEach((mascota) => selectorMascota.add(new Option(mascota.nombre, mascota.id)));
+                if (!mascotas.length) mostrarFeedbackAdopcion('No hay mascotas disponibles para adoptar.', 'warning');
+            })
+            .catch((error) => {
+                errorMascotas = error;
+                mostrarFeedbackAdopcion(error.message, 'warning');
+            });
+
+        document.querySelector('#adoptarModal').addEventListener('show.bs.modal', (evento) => {
+            const boton = evento.relatedTarget;
+            selectorMascota.value = '';
+            if (!boton) return;
+            const nombreTarjeta = boton.closest('.mascota-item')?.querySelector('.card-title')?.textContent.trim();
+            const nombreDetalle = boton.textContent.match(/Adoptar a\s+(.+)/i)?.[1]?.trim();
+            const nombre = nombreTarjeta || nombreDetalle;
+            mascotasDisponibles.then(() => {
+                const opcion = [...selectorMascota.options].find((item) =>
+                    item.textContent.toLocaleLowerCase('es') === nombre?.toLocaleLowerCase('es'));
+                if (opcion) selectorMascota.value = opcion.value;
+            });
+        });
+
+        function mostrarFeedbackAdopcion(mensaje, tipo) {
+            feedbackAdopcion.className = `alert alert-${tipo} mt-3 mb-0`;
+            feedbackAdopcion.replaceChildren(document.createTextNode(mensaje));
+            if (tipo === 'warning' && mensaje.includes('iniciar sesión')) {
+                const enlace = document.createElement('a');
+                enlace.href = '/login';
+                enlace.className = 'alert-link ms-1';
+                enlace.textContent = 'Iniciar sesión';
+                feedbackAdopcion.append(' ', enlace);
+            }
+        }
+
+        formularioAdopcion.addEventListener('submit', async (evento) => {
             evento.preventDefault();
-            const feedback = document.querySelector('#adopcionFeedback');
-            feedback.className = 'alert alert-warning mt-3 mb-0';
-            feedback.textContent = 'Formulario validado. La solicitud no se ha enviado porque esta página aún no está conectada a un servidor.';
+            const botonEnviar = formularioAdopcion.querySelector('[type="submit"]');
+            botonEnviar.disabled = true;
+            try {
+                await mascotasDisponibles;
+                if (errorMascotas) throw errorMascotas;
+                const respuesta = await fetch('/api/solicitudes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(new FormData(formularioAdopcion))),
+                });
+                const resultado = await respuesta.json();
+                if (!respuesta.ok) {
+                    if (respuesta.status === 401) throw new Error('Debes iniciar sesión para enviar una solicitud.');
+                    throw new Error(resultado.mensaje || 'No fue posible enviar la solicitud.');
+                }
+                mostrarFeedbackAdopcion(resultado.mensaje, 'success');
+                formularioAdopcion.reset();
+            } catch (error) {
+                mostrarFeedbackAdopcion(error.message || 'No fue posible conectar con el servidor.', 'warning');
+            } finally {
+                botonEnviar.disabled = false;
+            }
         });
 
         document.querySelector('#newsletterForm').addEventListener('submit', (evento) => {

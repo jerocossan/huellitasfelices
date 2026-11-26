@@ -449,7 +449,8 @@
                         <th>#</th>
                         <th>Usuario</th>
                         <th>Mascota</th>
-                        <th>Fecha</th>
+                        <th>Detalles</th>
+                    <th>Fecha</th>
                         <th>Estado</th>
                         <th>Acción</th>
                     </tr>
@@ -487,194 +488,194 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const APP = {
-            elementos: {
-                buscar: document.getElementById("buscarMascota"),
-                botonesEliminar: document.querySelectorAll(".btn-eliminar"),
-                botonesEditar: document.querySelectorAll(".btn-editar"),
-                formAgregar: document.getElementById("formAgregar"),
-                formEditar: document.getElementById("formEditar"),
-                tablaSolicitudes: document.getElementById("tablaSolicitudes"),
-                tablaUsuarios: document.getElementById("tablaUsuarios"),
-                errorSolicitudes: document.getElementById("errorSolicitudes"),
-                errorUsuarios: document.getElementById("errorUsuarios")
-            },
-            init() {
-                this.setupBuscador();
-                this.setupBotonesEliminar();
-                this.setupBotonesEditar();
-                this.setupFormularios();
-                this.setupSolicitudes();
-                this.cargarSolicitudes();
-                this.cargarUsuarios();
-            },
-            async pedir(url, opciones = {}) {
-                const respuesta = await fetch(url, {
-                    credentials: "same-origin",
-                    ...opciones,
-                    headers: { "Content-Type": "application/json", ...(opciones.headers || {}) }
-                });
-                if (!(respuesta.headers.get("content-type") || "").includes("application/json")) {
-                    throw new Error(`El servidor respondió con una página en vez de datos JSON (HTTP ${respuesta.status}). Reinicia el backend y abre el panel desde la dirección de Express, no desde Live Server.`);
-                }
-                const datos = await respuesta.json();
-                if (!respuesta.ok) throw new Error(datos.mensaje || "No fue posible completar la solicitud.");
-                return datos;
-            },
-            mostrarError(elemento, error) {
-                elemento.textContent = error.message;
-                elemento.classList.remove("d-none");
-            },
-            celda(fila, valor) {
-                const celda = document.createElement("td");
-                celda.textContent = valor == null ? "" : String(valor);
-                fila.appendChild(celda);
-                return celda;
-            },
-            async cargarSolicitudes() {
-                try {
-                    const solicitudes = await this.pedir("/api/admin/solicitudes");
-                    this.elementos.errorSolicitudes.classList.add("d-none");
-                    this.elementos.tablaSolicitudes.replaceChildren();
-                    if (!solicitudes.length) {
-                        const fila = this.elementos.tablaSolicitudes.insertRow();
-                        const celda = fila.insertCell();
-                        celda.colSpan = 6;
-                        celda.textContent = "No hay solicitudes registradas.";
-                        return;
-                    }
-                    solicitudes.forEach((solicitud) => {
-                        const fila = this.elementos.tablaSolicitudes.insertRow();
-                        this.celda(fila, solicitud.id_solicitud);
-                        this.celda(fila, solicitud.usuario);
-                        this.celda(fila, solicitud.mascota);
-                        this.celda(fila, solicitud.fecha);
-                        const celdaEstado = fila.insertCell();
-                        const badge = document.createElement("span");
-                        const clases = {
-                            Pendiente: "text-bg-warning",
-                            Aprobada: "text-bg-success",
-                            Rechazada: "text-bg-danger"
-                        };
-                        badge.className = `badge ${clases[solicitud.estado] || "text-bg-secondary"}`;
-                        badge.textContent = solicitud.estado === "Aprobada" ? "Aceptada" : solicitud.estado;
-                        celdaEstado.appendChild(badge);
-                        const celdaAccion = fila.insertCell();
-                        if (solicitud.estado === "Pendiente") {
-                            ["Aprobada", "Rechazada"].forEach((estado) => {
-                                const boton = document.createElement("button");
-                                boton.type = "button";
-                                boton.className = `btn btn-${estado === "Aprobada" ? "success" : "danger"} btn-sm me-1`;
-                                boton.dataset.id = solicitud.id_solicitud;
-                                boton.dataset.estado = estado;
-                                boton.textContent = estado === "Aprobada" ? "Aceptar" : "Rechazar";
-                                celdaAccion.appendChild(boton);
-                            });
-                        } else {
-                            celdaAccion.textContent = "—";
-                        }
-                    });
-                } catch (error) {
-                    this.mostrarError(this.elementos.errorSolicitudes, error);
-                }
-            },
-            async cargarUsuarios() {
-                try {
-                    const usuarios = await this.pedir("/api/admin/usuarios");
-                    this.elementos.errorUsuarios.classList.add("d-none");
-                    this.elementos.tablaUsuarios.replaceChildren();
-                    if (!usuarios.length) {
-                        const fila = this.elementos.tablaUsuarios.insertRow();
-                        const celda = fila.insertCell();
-                        celda.colSpan = 5;
-                        celda.textContent = "No hay usuarios registrados.";
-                        return;
-                    }
-                    const nombresRoles = {
-                        usuario: "Usuario",
-                        admin: "Administrador",
-                        fundacion: "Fundación",
-                        especialistas: "Especialista"
-                    };
-                    usuarios.forEach((usuario) => {
-                        const fila = this.elementos.tablaUsuarios.insertRow();
-                        this.celda(fila, usuario.id_usuario);
-                        this.celda(fila, usuario.nombre);
-                        this.celda(fila, usuario.correo);
-                        this.celda(fila, nombresRoles[usuario.rol] || usuario.rol);
-                        const celdaEstado = fila.insertCell();
-                        const badge = document.createElement("span");
-                        badge.className = `badge ${usuario.estado === "Online" ? "text-bg-primary" : "text-bg-success"}`;
-                        badge.textContent = usuario.estado;
-                        celdaEstado.appendChild(badge);
-                    });
-                } catch (error) {
-                    this.mostrarError(this.elementos.errorUsuarios, error);
-                }
-            },
-            setupSolicitudes() {
-                this.elementos.tablaSolicitudes.addEventListener("click", async (evento) => {
-                    const boton = evento.target.closest("button[data-id]");
-                    if (!boton) return;
-                    boton.disabled = true;
-                    try {
-                        await this.pedir(`/api/admin/solicitudes/${boton.dataset.id}/estado`, {
-                            method: "PATCH",
-                            body: JSON.stringify({ estado: boton.dataset.estado })
-                        });
-                        await this.cargarSolicitudes();
-                    } catch (error) {
-                        this.mostrarError(this.elementos.errorSolicitudes, error);
-                        boton.disabled = false;
-                    }
-                });
-            },
-            setupBuscador() {
-                if (!this.elementos.buscar) return;
-                this.elementos.buscar.addEventListener("keyup", (e) => {
-                    const filtro = e.target.value.toLowerCase();
-                    document.querySelectorAll(".mascota-card").forEach(card => {
-                        card.parentElement.style.display = card.innerText.toLowerCase().includes(filtro) ? "block" : "none";
-                    });
-                });
-            },
-            setupBotonesEliminar() {
-                this.elementos.botonesEliminar.forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        if (confirm("¿Desea eliminar esta mascota?")) alert("Mascota eliminada correctamente.");
-                    });
-                });
-            },
-            setupBotonesEditar() {
-                this.elementos.botonesEditar.forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        new bootstrap.Modal(document.getElementById("modalEditar")).show();
-                    });
-                });
-            },
-            setupFormularios() {
-                [this.elementos.formAgregar, this.elementos.formEditar].forEach(form => {
-                    if (!form) return;
-                    form.addEventListener("submit", (e) => {
-                        e.preventDefault();
-                        if (form.checkValidity() === false) {
-                            e.stopPropagation();
-                        } else {
-                            alert("Formulario válido. Guardando datos...");
-                        }
-                        form.classList.add("was-validated");
-                    });
-                });
-            }
-        };
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", () => APP.init());
-        } else {
-            APP.init();
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const APP = {
+    elementos: {
+        buscar: document.getElementById("buscarMascota"),
+        botonesEliminar: document.querySelectorAll(".btn-eliminar"),
+        botonesEditar: document.querySelectorAll(".btn-editar"),
+        formAgregar: document.getElementById("formAgregar"),
+        formEditar: document.getElementById("formEditar"),
+        tablaSolicitudes: document.getElementById("tablaSolicitudes"),
+        tablaUsuarios: document.getElementById("tablaUsuarios"),
+        errorSolicitudes: document.getElementById("errorSolicitudes"),
+        errorUsuarios: document.getElementById("errorUsuarios")
+    },
+    init() {
+        this.setupBuscador();
+        this.setupBotonesEliminar();
+        this.setupBotonesEditar();
+        this.setupFormularios();
+        this.setupSolicitudes();
+        this.cargarSolicitudes();
+        this.cargarUsuarios();
+    },
+    async pedir(url, opciones = {}) {
+        const respuesta = await fetch(url, {
+            credentials: "same-origin",
+            ...opciones,
+            headers: { "Content-Type": "application/json", ...(opciones.headers || {}) }
+        });
+        if (!(respuesta.headers.get("content-type") || "").includes("application/json")) {
+            throw new Error(`El servidor respondió con una página en vez de datos JSON (HTTP ${respuesta.status}). Reinicia el backend y abre el panel desde la dirección de Express, no desde Live Server.`);
         }
-    </script>
+        const datos = await respuesta.json();
+        if (!respuesta.ok) throw new Error(datos.mensaje || "No fue posible completar la solicitud.");
+        return datos;
+    },
+    mostrarError(elemento, error) {
+        elemento.textContent = error.message;
+        elemento.classList.remove("d-none");
+    },
+    celda(fila, valor) {
+        const celda = document.createElement("td");
+        celda.textContent = valor == null ? "" : String(valor);
+        fila.appendChild(celda);
+        return celda;
+    },
+    async cargarSolicitudes() {
+        try {
+            const solicitudes = await this.pedir("/api/admin/solicitudes");
+            this.elementos.tablaSolicitudes.replaceChildren();
+            if (!solicitudes.length) {
+                const fila = this.elementos.tablaSolicitudes.insertRow();
+                const celda = fila.insertCell();
+                celda.colSpan = 6;
+                celda.textContent = "No hay solicitudes registradas.";
+                return;
+            }
+            solicitudes.forEach((solicitud) => {
+                const fila = this.elementos.tablaSolicitudes.insertRow();
+                this.celda(fila, solicitud.id_solicitud);
+                this.celda(fila, solicitud.usuario);
+                this.celda(fila, solicitud.mascota);
+                this.celda(fila, solicitud.fecha);
+                const celdaEstado = fila.insertCell();
+                const badge = document.createElement("span");
+                const clases = {
+                    Pendiente: "text-bg-warning",
+                    Aprobada: "text-bg-success",
+                    Rechazada: "text-bg-danger"
+                };
+                badge.className = `badge ${clases[solicitud.estado] || "text-bg-secondary"}`;
+                badge.textContent = solicitud.estado === "Aprobada" ? "Aceptada" : solicitud.estado;
+                celdaEstado.appendChild(badge);
+                const celdaAccion = fila.insertCell();
+                if (solicitud.estado === "Pendiente") {
+                    ["Aprobada", "Rechazada"].forEach((estado) => {
+                        const boton = document.createElement("button");
+                        boton.type = "button";
+                        boton.className = `btn btn-${estado === "Aprobada" ? "success" : "danger"} btn-sm me-1`;
+                        boton.dataset.id = solicitud.id_solicitud;
+                        boton.dataset.estado = estado;
+                        boton.textContent = estado === "Aprobada" ? "Aceptar" : "Rechazar";
+                        celdaAccion.appendChild(boton);
+                    });
+                } else {
+                    celdaAccion.textContent = "—";
+                }
+            });
+            this.elementos.errorSolicitudes.classList.add("d-none");
+        } catch (error) {
+            this.mostrarError(this.elementos.errorSolicitudes, error);
+        }
+    },
+    async cargarUsuarios() {
+        try {
+            const usuarios = await this.pedir("/api/admin/usuarios");
+            this.elementos.tablaUsuarios.replaceChildren();
+            if (!usuarios.length) {
+                const fila = this.elementos.tablaUsuarios.insertRow();
+                const celda = fila.insertCell();
+                celda.colSpan = 5;
+                celda.textContent = "No hay usuarios registrados.";
+                return;
+            }
+            const nombresRoles = {
+                usuario: "Usuario",
+                admin: "Administrador",
+                fundacion: "Fundación",
+                especialistas: "Especialista"
+            };
+            usuarios.forEach((usuario) => {
+                const fila = this.elementos.tablaUsuarios.insertRow();
+                this.celda(fila, usuario.id_usuario);
+                this.celda(fila, usuario.nombre);
+                this.celda(fila, usuario.correo);
+                this.celda(fila, nombresRoles[usuario.rol] || usuario.rol);
+                const celdaEstado = fila.insertCell();
+                const badge = document.createElement("span");
+                badge.className = `badge ${usuario.estado === "Online" ? "text-bg-primary" : "text-bg-success"}`;
+                badge.textContent = usuario.estado;
+                celdaEstado.appendChild(badge);
+            });
+            this.elementos.errorUsuarios.classList.add("d-none");
+        } catch (error) {
+            this.mostrarError(this.elementos.errorUsuarios, error);
+        }
+    },
+    setupSolicitudes() {
+        this.elementos.tablaSolicitudes.addEventListener("click", async (evento) => {
+            const boton = evento.target.closest("button[data-id]");
+            if (!boton) return;
+            boton.disabled = true;
+            try {
+                await this.pedir(`/api/admin/solicitudes/${boton.dataset.id}/estado`, {
+                    method: "PATCH",
+                    body: JSON.stringify({ estado: boton.dataset.estado })
+                });
+                await this.cargarSolicitudes();
+            } catch (error) {
+                this.mostrarError(this.elementos.errorSolicitudes, error);
+                boton.disabled = false;
+            }
+        });
+    },
+    setupBuscador() {
+        if (!this.elementos.buscar) return;
+        this.elementos.buscar.addEventListener("keyup", (e) => {
+            const filtro = e.target.value.toLowerCase();
+            document.querySelectorAll(".mascota-card").forEach(card => {
+                card.parentElement.style.display = card.innerText.toLowerCase().includes(filtro) ? "block" : "none";
+            });
+        });
+    },
+    setupBotonesEliminar() {
+        this.elementos.botonesEliminar.forEach(btn => {
+            btn.addEventListener("click", () => {
+                if (confirm("¿Desea eliminar esta mascota?")) alert("Mascota eliminada correctamente.");
+            });
+        });
+    },
+    setupBotonesEditar() {
+        this.elementos.botonesEditar.forEach(btn => {
+            btn.addEventListener("click", () => {
+                new bootstrap.Modal(document.getElementById("modalEditar")).show();
+            });
+        });
+    },
+    setupFormularios() {
+        [this.elementos.formAgregar, this.elementos.formEditar].forEach(form => {
+            if (!form) return;
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                if (form.checkValidity() === false) {
+                    e.stopPropagation();
+                } else {
+                    alert("Formulario válido. Guardando datos...");
+                }
+                form.classList.add("was-validated");
+            });
+        });
+    }
+};
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => APP.init());
+} else {
+    APP.init();
+}
+</script>
 
 </body>
 
