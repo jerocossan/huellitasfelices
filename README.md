@@ -170,8 +170,11 @@ La base de datos `huellitas_felices` incluye estas tablas:
 | `POST` | `/api/registro` | Registra un nuevo usuario                      | Público       |
 | `GET`  | `/api/logout`   | Cierra la sesión                               | Público       |
 | `GET`   | `/api/admin/usuarios` | Lista las cuentas y sus roles             | Admin         |
+| `GET`   | `/api/admin/solicitudes` | Lista las solicitudes de adopción       | Admin         |
+| `PATCH` | `/api/admin/solicitudes/:id/estado` | Aprueba o rechaza una solicitud | Admin         |
 | `PATCH` | `/api/admin/usuarios/:id/rol` | Asigna un rol existente          | Admin         |
-| `GET`  | `/api/mascotas` | Lista las mascotas                             | Con sesión    |
+| `GET`  | `/api/mascotas` | Lista las mascotas disponibles                   | Público       |
+| `POST` | `/api/solicitudes` | Envía una solicitud de adopción                | Usuario autenticado |
 | `GET`  | `/report_pet`   | Descarga el reporte de una mascota (`pet_id`)  | Con sesión    |
 
 El registro público siempre asigna el rol `usuario`; el formulario no acepta
@@ -202,7 +205,7 @@ protegidas por su rol. La sesión conserva `id_usuario`, `user_name`, `correo`,
 
 ## Estado del proyecto
 
-El registro, el inicio de sesión, el control de acceso por rol y el reporte de mascotas están conectados al backend y a MySQL. Las vistas de usuario y administrador están maquetadas y aún falta conectar varias de sus operaciones (solicitudes, favoritos, comentarios y gestión) con nuevos endpoints.
+El registro, el inicio de sesión, el control de acceso por rol, el reporte de mascotas y las solicitudes de adopción están conectados al backend y a MySQL. Las solicitudes se asocian a la cuenta autenticada y a una mascota disponible; el administrador puede consultar sus detalles y aprobarlas o rechazarlas. Favoritos y comentarios aún requieren endpoints.
 
 ## Contexto académico
 
